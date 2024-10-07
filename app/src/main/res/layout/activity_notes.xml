@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:text="Modify Password"
+        android:text="M"
         android:textSize="14sp"
         android:textColor="@android:color/white"
         android:backgroundTint="@color/black"

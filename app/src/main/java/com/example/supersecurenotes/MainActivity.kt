@@ -14,10 +14,9 @@ class MainActivity : AppCompatActivity() {
     private val correctPassword = "0000"
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Installa lo splash screen
-        installSplashScreen()
 
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         setContentView(R.layout.activity_main)
 
         // Trova il campo di testo e il pulsante nel layout

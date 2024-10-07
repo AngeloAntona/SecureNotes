@@ -9,11 +9,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SuperSecureNotes">
 
-        <!-- MainActivity -->
+        <!-- MainActivity con il tema dello SplashScreen -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+            android:theme="@style/Theme.App.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
