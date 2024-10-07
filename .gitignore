@@ -383,3 +383,33 @@ Temporary Items
 
 # End of https://www.gitignore.io/api/java,linux,macos,windows,android,intellij,androidstudio
 >>>>>>> bd88e165622aa32c41f7e5c12691176ff4834d84
+
+
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+
