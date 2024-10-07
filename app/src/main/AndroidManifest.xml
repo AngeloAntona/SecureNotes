@@ -9,7 +9,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SuperSecureNotes">
 
-        <!-- MainActivity con il tema dello SplashScreen -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -20,13 +19,8 @@
             </intent-filter>
         </activity>
 
-        <!-- NotesActivity -->
         <activity android:name=".NotesActivity" />
-
-        <!-- ModLockActivity per cambiare la password -->
         <activity android:name=".ModLockActivity" />
-
-        <!-- VisualizationActivity per visualizzare e modificare le note -->
         <activity android:name=".VisualizationActivity" />
 
     </application>

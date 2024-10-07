@@ -5,35 +5,33 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Campo di testo per il titolo (modificabile) -->
+    <!-- Editable text field for the note title -->
     <EditText
         android:id="@+id/noteTitleEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Titolo della nota"
+        android:hint="Note title"
         android:textSize="18sp"
         android:textStyle="bold"/>
 
-    <!-- Campo di testo per il corpo della nota (modificabile) -->
+    <!-- Editable text field for the note body -->
     <EditText
         android:id="@+id/noteBodyEditText"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:hint="Corpo della nota"
+        android:hint="Note body"
         android:gravity="top"
         android:inputType="textMultiLine"/>
 
-    <!-- Pulsante per salvare le modifiche -->
+    <!-- Button to save the changes -->
     <Button
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Salva"
+        android:text="Save"
         android:textColor="?android:colorBackground"
-        android:background="@drawable/rounded_button"
-        />
-
+        android:background="@drawable/rounded_button"/>
 
 </LinearLayout>

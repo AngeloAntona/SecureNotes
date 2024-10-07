@@ -1,22 +1,19 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Tema principale per la modalità chiara -->
+    <!-- Main theme for light mode -->
     <style name="Theme.SuperSecureNotes" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Colore dello sfondo dell'app in modalità chiara -->
         <item name="android:colorBackground">@color/primaryBackgroundColor</item>
-        <!-- Colore del testo in modalità chiara -->
         <item name="android:textColorPrimary">@color/primaryTextColor</item>
-        <!-- Colore della barra di stato e barra di navigazione -->
         <item name="colorPrimaryDark">@color/primaryBackgroundColor</item>
         <item name="colorAccent">@color/black</item>
 
-        <!-- Personalizzazione del Contextual Action Mode per la modalità chiara -->
-        <item name="actionModeBackground">@color/primaryBackgroundColor</item> <!-- Sfondo del Contextual Action Mode -->
-        <item name="actionModeSplitBackground">@color/primaryBackgroundColor</item> <!-- Sfondo split del Contextual Action Mode -->
-        <item name="actionModeCloseDrawable">@android:drawable/ic_menu_close_clear_cancel</item> <!-- Icona chiusura (puoi creare o usare una predefinita) -->
-        <item name="android:textColorPrimary">@color/primaryTextColor</item> <!-- Colore del testo -->
+        <!-- Customization of the Contextual Action Mode for light mode -->
+        <item name="actionModeBackground">@color/primaryBackgroundColor</item>
+        <item name="actionModeSplitBackground">@color/primaryBackgroundColor</item>
+        <item name="actionModeCloseDrawable">@android:drawable/ic_menu_close_clear_cancel</item>
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
     </style>
 
-    <!-- Tema dello SplashScreen per la modalità chiara -->
+    <!-- SplashScreen theme for light mode -->
     <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/primaryBackgroundColor</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/securenotes_logo_white</item>

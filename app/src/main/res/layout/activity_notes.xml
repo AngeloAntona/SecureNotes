@@ -3,18 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- TextView per il messaggio di lista vuota -->
+    <!-- TextView for the empty list message -->
     <TextView
         android:id="@+id/emptyTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nessuna nota disponibile"
+        android:text="No notes available"
         android:visibility="gone"
         android:layout_centerInParent="true"
         android:textSize="18sp"
         android:textColor="?android:textColorPrimary" />
 
-    <!-- ListView per le note -->
+    <!-- ListView for notes -->
     <ListView
         android:id="@+id/notesListView"
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         android:layout_alignParentTop="true"
         android:padding="16dp"/>
 
-    <!-- Pulsante per creare una nuova nota in basso a sinistra -->
+    <!-- Button to create a new note in the bottom left -->
     <Button
         android:id="@+id/newNoteButton"
         android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
         android:background="@drawable/rounded_button"
         android:layout_margin="16dp"/>
 
-    <!-- Pulsante per cambiare la password in basso a destra -->
+    <!-- Button to change the password in the bottom right -->
     <Button
         android:id="@+id/changePasswordButton"
         android:layout_width="wrap_content"

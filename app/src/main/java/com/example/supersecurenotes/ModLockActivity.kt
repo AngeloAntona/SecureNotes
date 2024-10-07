@@ -30,13 +30,13 @@ class ModLockActivity : AppCompatActivity() {
             if (secureNotesManager.isPasswordCorrect(oldPassword)) {
                 if (newPassword == confirmPassword) {
                     secureNotesManager.setPassword(newPassword)
-                    Toast.makeText(this, "Password aggiornata con successo", Toast.LENGTH_SHORT).show()
-                    finish() // Torna all'activity precedente
+                    Toast.makeText(this, "Password successfully updated", Toast.LENGTH_SHORT).show()
+                    finish() // Return to the previous activity
                 } else {
-                    Toast.makeText(this, "Le nuove password non corrispondono", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "New passwords do not match", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(this, "La password precedente è errata", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Old password is incorrect", Toast.LENGTH_SHORT).show()
             }
         }
     }

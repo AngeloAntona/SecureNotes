@@ -1,13 +1,13 @@
 <resources>
-    <!-- Colori per la modalità chiara -->
-    <color name="primaryTextColor">#000000</color> <!-- Testo nero -->
-    <color name="primaryBackgroundColor">#FFFFFF</color> <!-- Sfondo bianco -->
+    <!-- Colors for light mode -->
+    <color name="primaryTextColor">#000000</color>
+    <color name="primaryBackgroundColor">#FFFFFF</color>
 
-    <!-- Colori per la modalità scura -->
-    <color name="primaryTextColorNight">#FFFFFF</color> <!-- Testo bianco -->
-    <color name="primaryBackgroundColorNight">#121212</color> <!-- Sfondo scuro -->
+    <!-- Colors for dark mode -->
+    <color name="primaryTextColorNight">#FFFFFF</color>
+    <color name="primaryBackgroundColorNight">#121212</color>
 
-    <!-- Definizioni per i colori mancanti -->
-    <color name="black">#000000</color> <!-- Nero -->
-    <color name="white">#FFFFFF</color> <!-- Bianco -->
+    <!-- Definitions for missing colors -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
 </resources>

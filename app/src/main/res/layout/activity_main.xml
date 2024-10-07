@@ -6,20 +6,20 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="16dp"
-    android:background="?android:colorBackground"> <!-- Sfondo del layout che usa il colore impostato nel tema -->
+    android:background="?android:colorBackground"> <!-- Layout background using the color set in the theme -->
 
-    <!-- Campo per inserire la password -->
+    <!-- Password input field -->
     <EditText
         android:id="@+id/passwordEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Inserisci la password"
+        android:hint="Enter password"
         android:inputType="textPassword"
         android:textColor="?android:textColorPrimary"
         android:textColorHint="?android:textColorPrimary"
         android:minHeight="48dp" />
 
-    <!-- Pulsante di login -->
+    <!-- Login button -->
     <Button
         android:id="@+id/loginButton"
         android:layout_width="match_parent"

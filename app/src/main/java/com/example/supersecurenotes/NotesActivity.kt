@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
@@ -15,7 +14,6 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 
 class NotesActivity : AppCompatActivity() {
-
     private lateinit var sharedPreferences: SharedPreferences
     private val noteTitlesKey = "noteTitlesKey"
 
@@ -24,11 +22,7 @@ class NotesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_notes)
 
         sharedPreferences = createEncryptedSharedPreferences(this)
-
-        // Inizializza i pulsanti
         initializeButtons()
-
-        // Aggiorna la lista delle note
         updateNotesList()
     }
 
@@ -44,21 +38,21 @@ class NotesActivity : AppCompatActivity() {
         )
     }
 
-    // Metodo per inizializzare i pulsanti
+    // Method to initialize buttons
     private fun initializeButtons() {
-        // Pulsante per creare una nuova nota
+        // Button to create a new note
         val newNoteButton = findViewById<Button>(R.id.newNoteButton)
         newNoteButton.setOnClickListener {
-            // Apri una VisualizationActivity vuota per creare una nuova nota
+            // Open an empty VisualizationActivity to create a new note
             val intent = Intent(this, VisualizationActivity::class.java)
-            intent.putExtra("noteTitle", "") // Passiamo un titolo vuoto
+            intent.putExtra("noteTitle", "") // Passing an empty title
             startActivity(intent)
         }
 
-        // Pulsante per modificare la password
+        // Button to change the password
         val changePasswordButton = findViewById<Button>(R.id.changePasswordButton)
         changePasswordButton.setOnClickListener {
-            // Apri ModLockActivity per cambiare la password
+            // Open ModLockActivity to change the password
             val intent = Intent(this, ModLockActivity::class.java)
             startActivity(intent)
         }
@@ -69,19 +63,19 @@ class NotesActivity : AppCompatActivity() {
         val notesListView = findViewById<ListView>(R.id.notesListView)
         val emptyTextView = findViewById<TextView>(R.id.emptyTextView)
 
-        // Mostra un messaggio se non ci sono note
+        // Show a message if there are no notes
         if (noteTitles.isEmpty()) {
-            emptyTextView.text = "Nessuna nota disponibile"
+            emptyTextView.text = "No notes available"
             emptyTextView.visibility = TextView.VISIBLE
         } else {
             emptyTextView.visibility = TextView.GONE
         }
 
-        // Adatta i dati alla ListView
+        // Adapt the data to the ListView
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, noteTitles)
         notesListView.adapter = adapter
 
-        // Gestisci il clic sugli elementi della lista
+        // Handle item clicks in the list
         notesListView.setOnItemClickListener { _, _, position, _ ->
             val selectedTitle = noteTitles[position]
             val intent = Intent(this, VisualizationActivity::class.java)
@@ -89,7 +83,7 @@ class NotesActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Gestisci la pressione prolungata sugli elementi della lista
+        // Handle long presses on list items
         notesListView.setOnItemLongClickListener { _, _, position, _ ->
             val selectedTitle = noteTitles[position]
             showDeleteConfirmationDialog(selectedTitle, position, adapter, noteTitles)
@@ -104,9 +98,9 @@ class NotesActivity : AppCompatActivity() {
         noteTitles: MutableList<String>
     ) {
         val dialogBuilder = AlertDialog.Builder(this)
-        dialogBuilder.setMessage("Vuoi davvero eliminare la nota \"$noteTitle\"?")
+        dialogBuilder.setMessage("Do you really want to delete the note \"$noteTitle\"?")
             .setCancelable(false)
-            .setPositiveButton("Sì") { dialog, _ ->
+            .setPositiveButton("Yes") { dialog, _ ->
                 deleteNote(noteTitle)
                 noteTitles.removeAt(position)
                 adapter.notifyDataSetChanged()
@@ -117,7 +111,7 @@ class NotesActivity : AppCompatActivity() {
             }
 
         val alert = dialogBuilder.create()
-        alert.setTitle("Elimina Nota")
+        alert.setTitle("Delete Note")
         alert.show()
     }
 

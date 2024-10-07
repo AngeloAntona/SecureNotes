@@ -8,7 +8,7 @@ class PasswordManager(context: Context) {
 
     companion object {
         private const val PASSWORD_KEY = "user_password"
-        private const val DEFAULT_PASSWORD = "0000" // Default password
+        private const val DEFAULT_PASSWORD = "0000"
     }
 
     init {
@@ -23,17 +23,14 @@ class PasswordManager(context: Context) {
         )
     }
 
-    // Metodo per ottenere la password salvata
     fun getPassword(): String {
         return sharedPreferences.getString(PASSWORD_KEY, DEFAULT_PASSWORD) ?: DEFAULT_PASSWORD
     }
 
-    // Metodo per aggiornare la password
     fun setPassword(newPassword: String) {
         sharedPreferences.edit().putString(PASSWORD_KEY, newPassword).apply()
     }
 
-    // Metodo per verificare se la password inserita è corretta
     fun isPasswordCorrect(enteredPassword: String): Boolean {
         return enteredPassword == getPassword()
     }

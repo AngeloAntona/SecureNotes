@@ -21,41 +21,31 @@ class VisualizationActivity : AppCompatActivity() {
 
         sharedPreferences = createEncryptedSharedPreferences(this)
 
-        // Recupera il titolo originale della nota dall'intent
         val originalTitle = intent.getStringExtra("noteTitle") ?: ""
-
-        // Trova gli elementi del layout
         val titleEditText = findViewById<EditText>(R.id.noteTitleEditText)
         val bodyEditText = findViewById<EditText>(R.id.noteBodyEditText)
         val saveButton = findViewById<Button>(R.id.saveButton)
 
-        // Imposta il titolo e il contenuto della nota
+        // Set the title and content of the note
         titleEditText.setText(originalTitle)
         val noteContent = sharedPreferences.getString(originalTitle, "")
         bodyEditText.setText(noteContent)
 
-        // Gestione del clic sul pulsante "Salva"
+        // Handle the click on the "Save" button
         saveButton.setOnClickListener {
             val modifiedTitle = titleEditText.text.toString()
             val modifiedBody = bodyEditText.text.toString()
 
-            // Se il titolo è stato modificato, rimuove la vecchia nota
             if (originalTitle != modifiedTitle) {
                 removeOldNote(originalTitle)
             }
 
-            // Salva la nuova nota (titolo e contenuto)
             saveNote(modifiedTitle, modifiedBody)
-
-            // Messaggio di conferma
-            Toast.makeText(this, "Nota salvata", Toast.LENGTH_SHORT).show()
-
-            // Chiude l'activity una volta premuto "Salva"
+            Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
 
-    // Metodo per creare EncryptedSharedPreferences
     private fun createEncryptedSharedPreferences(context: Context): SharedPreferences {
         val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
 
@@ -68,25 +58,23 @@ class VisualizationActivity : AppCompatActivity() {
         )
     }
 
-    // Metodo per rimuovere una vecchia nota
     private fun removeOldNote(oldTitle: String) {
         val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf())!!.toMutableSet()
         noteTitles.remove(oldTitle)
         sharedPreferences.edit().putStringSet(noteTitlesKey, noteTitles).apply()
 
-        // Rimuovi anche il contenuto della nota associata al vecchio titolo
+        // Remove the note content associated with the old title
         sharedPreferences.edit().remove(oldTitle).apply()
     }
 
-    // Metodo per salvare una nuova nota
     private fun saveNote(newTitle: String, content: String) {
         val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf())!!.toMutableSet()
 
-        // Aggiungi il nuovo titolo alla lista dei titoli
+        // Add the new title to the list of titles
         noteTitles.add(newTitle)
         sharedPreferences.edit().putStringSet(noteTitlesKey, noteTitles).apply()
 
-        // Salva il contenuto della nota
+        // Save the note content
         sharedPreferences.edit().putString(newTitle, content).apply()
     }
 }

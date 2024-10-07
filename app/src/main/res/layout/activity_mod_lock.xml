@@ -5,54 +5,54 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Titolo -->
+    <!-- Title -->
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Modifica la password"
+        android:text="Change Password"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_gravity="center"
         android:paddingBottom="16dp"/>
 
-    <!-- Campo per la password precedente -->
+    <!-- Field for the previous password -->
     <EditText
         android:id="@+id/previousPasswordEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password precedente"
+        android:hint="Previous password"
         android:inputType="textPassword"
         android:padding="12dp"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Campo per la nuova password -->
+    <!-- Field for the new password -->
     <EditText
         android:id="@+id/newPasswordEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nuova password"
+        android:hint="New password"
         android:inputType="textPassword"
         android:padding="12dp"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Campo per ripetere la nuova password -->
+    <!-- Field to repeat the new password -->
     <EditText
         android:id="@+id/repeatNewPasswordEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Ripeti nuova password"
+        android:hint="Repeat new password"
         android:inputType="textPassword"
         android:padding="12dp"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Pulsante per salvare la nuova password -->
+    <!-- Button to save the new password -->
     <Button
         android:id="@+id/savePasswordButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Salva"
+        android:text="Save"
         android:textColor="?android:colorBackground"
         android:background="@drawable/rounded_button" />
 </LinearLayout>
