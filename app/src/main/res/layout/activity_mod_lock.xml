@@ -46,4 +46,13 @@
         android:padding="12dp"
         android:layout_marginBottom="16dp"/>
 
+    <!-- Pulsante per salvare la nuova password -->
+    <Button
+        android:id="@+id/savePasswordButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Salva"
+        android:textColor="?android:colorBackground"
+        android:background="@drawable/rounded_button" />
 </LinearLayout>

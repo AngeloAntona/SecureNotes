@@ -12,7 +12,7 @@
         android:visibility="gone"
         android:layout_centerInParent="true"
         android:textSize="18sp"
-        android:textColor="@android:color/black" />
+        android:textColor="?android:textColorPrimary" />
 
     <!-- ListView per le note -->
     <ListView
@@ -33,8 +33,8 @@
         android:layout_alignParentStart="true"
         android:text="+"
         android:textSize="24sp"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/black"
+        android:textColor="?android:colorBackground"
+        android:background="@drawable/rounded_button"
         android:layout_margin="16dp"/>
 
     <!-- Pulsante per cambiare la password in basso a destra -->
@@ -46,8 +46,8 @@
         android:layout_alignParentEnd="true"
         android:text="M"
         android:textSize="14sp"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/black"
+        android:textColor="?android:colorBackground"
+        android:background="@drawable/rounded_button"
         android:layout_margin="16dp"/>
 
 </RelativeLayout>

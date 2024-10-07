@@ -1,5 +1,6 @@
 package com.example.supersecurenotes
 
+import PasswordManager
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -10,14 +11,17 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 class MainActivity : AppCompatActivity() {
 
-    // Definisci la password corretta
-    private val correctPassword = "0000"
+    private lateinit var secureNotesManager: PasswordManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Installa lo splash screen
+        installSplashScreen() // Funzionalità mantenuta dal vecchio codice
 
         super.onCreate(savedInstanceState)
-        installSplashScreen()
         setContentView(R.layout.activity_main)
+
+        // Inizializza il gestore delle password dinamico
+        secureNotesManager = PasswordManager(this)
 
         // Trova il campo di testo e il pulsante nel layout
         val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
@@ -27,9 +31,9 @@ class MainActivity : AppCompatActivity() {
         loginButton.setOnClickListener {
             val enteredPassword = passwordEditText.text.toString()
 
-            // Verifica se la password inserita è corretta
-            if (enteredPassword == correctPassword) {
-                // Se la password è corretta, avvia la nuova activity
+            // Verifica se la password inserita è corretta usando il PasswordManager
+            if (secureNotesManager.isPasswordCorrect(enteredPassword)) {
+                // Se la password è corretta, avvia la NotesActivity
                 val intent = Intent(this, NotesActivity::class.java)
                 startActivity(intent)
             } else {

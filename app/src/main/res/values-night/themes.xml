@@ -1,16 +1,25 @@
-<resources>
-<!-- Tema per la modalità scura -->
-<style name="Theme.SuperSecureNotes.Night" parent="Theme.AppCompat.DayNight.NoActionBar">
-    <item name="colorPrimary">@color/primaryBackgroundColorNight</item>
-    <item name="android:textColor">@color/primaryTextColorNight</item>
-    <item name="colorPrimaryDark">@color/primaryBackgroundColorNight</item>
-    <item name="colorAccent">@color/white</item>
-</style>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Tema principale per la modalità scura -->
+    <style name="Theme.SuperSecureNotes" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Colore dello sfondo dell'app in modalità scura -->
+        <item name="android:colorBackground">@color/primaryBackgroundColorNight</item>
+        <!-- Colore del testo in modalità scura -->
+        <item name="android:textColorPrimary">@color/primaryTextColorNight</item>
+        <!-- Colore della barra di stato e barra di navigazione -->
+        <item name="colorPrimaryDark">@color/primaryBackgroundColorNight</item>
+        <item name="colorAccent">@color/white</item>
 
-    <!-- Tema dello SplashScreen -->
-<style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
-<item name="windowSplashScreenBackground">@color/primaryBackgroundColorNight</item>
-<item name="windowSplashScreenAnimatedIcon">@drawable/securenotes_logo_black</item>
-<item name="postSplashScreenTheme">@style/Theme.SuperSecureNotes</item>
-</style>
+        <!-- Personalizzazione del Contextual Action Mode per la modalità scura -->
+        <item name="actionModeBackground">@color/black</item> <!-- Sfondo nero del Contextual Action Mode -->
+        <item name="android:actionModeBackground">@color/black</item> <!-- Sfondo ActionMode -->
+        <item name="android:textColorPrimary">@color/white</item> <!-- Colore del testo bianco -->
+        <item name="android:actionModeCloseDrawable">@android:drawable/ic_menu_close_clear_cancel</item> <!-- Icona di chiusura -->
+    </style>
+
+    <!-- Tema dello SplashScreen per la modalità scura -->
+    <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/primaryBackgroundColorNight</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/securenotes_logo_black</item>
+        <item name="postSplashScreenTheme">@style/Theme.SuperSecureNotes</item>
+    </style>
 </resources>

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="?android:colorBackground"> <!-- Sfondo del layout che usa il colore impostato nel tema -->
 
     <!-- Campo per inserire la password -->
     <EditText
@@ -13,6 +15,8 @@
         android:layout_height="wrap_content"
         android:hint="Inserisci la password"
         android:inputType="textPassword"
+        android:textColor="?android:textColorPrimary"
+        android:textColorHint="?android:textColorPrimary"
         android:minHeight="48dp" />
 
     <!-- Pulsante di login -->
@@ -21,5 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Login"
+        android:textColor="?android:colorBackground"
+        android:background="@drawable/rounded_button"
         android:layout_marginTop="16dp"/>
 </LinearLayout>
