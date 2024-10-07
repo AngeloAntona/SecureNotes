@@ -6,3 +6,5 @@ Please send in your source code in a zip file to the professor, in a message wit
 BSM - prostykod - {studentnumber} {lastname} {firstname}**  
 (Do not send in < nor > characters, and of course put in your owe personal information. Your student number has only numbers in it - no letters.)  
 The body of the message is irrelevant. You can e.g. put in your comments regarding this lab in iambic pentameter, but you can also leave it blank.
+
+![Logo](ReadmeFiles/ClassScheme.png)
