@@ -8,7 +8,7 @@ BSM - prostykod - {studentnumber} {lastname} {firstname}**
 (Do not send in < nor > characters, and of course put in your owe personal information. Your student number has only numbers in it - no letters.)  
 The body of the message is irrelevant. You can e.g. put in your comments regarding this lab in iambic pentameter, but you can also leave it blank.
 
-# ISTRUCTIONS
+# HOW TO USE THE APP
 ### Login with Password Screen (*MainActivity*)
 - **Default Password**: When the user starts the app for the first time, the default password is `0000`.
 ### Notes Screen (*NotesActivity*)
