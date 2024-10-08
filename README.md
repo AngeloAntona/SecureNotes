@@ -4,7 +4,7 @@ Write a program - secure notepad - the access to which will be secured by a pass
 ## CLASS DIAGRAM
 ![Class Diagram](ReadmeFiles/ClassScheme.png)
 ## HOW TO USE THE APP
-![ApplicationDemo](ReadmeFiles/ApplicationDemo.png)
+![ApplicationDemo](ReadmeFiles/ApplicationDemo.jpg)
 ### Login with Password Screen (*MainActivity*)
 - **Default Password**: When the user starts the app for the first time, the default password is `0000`.
 ### Notes Screen (*NotesActivity*)
