@@ -3,9 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="?android:colorBackground">
 
-    <!-- Title -->
+    <!-- Titolo -->
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
@@ -14,9 +16,9 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_gravity="center"
-        android:paddingBottom="16dp"/>
+        android:paddingBottom="16dp" />
 
-    <!-- Field for the previous password -->
+    <!-- Campo per la password precedente -->
     <EditText
         android:id="@+id/previousPasswordEditText"
         android:layout_width="match_parent"
@@ -24,9 +26,11 @@
         android:hint="Previous password"
         android:inputType="textPassword"
         android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp"
+        android:textColor="?android:textColorPrimary"
+        android:textColorHint="?android:textColorPrimary" />
 
-    <!-- Field for the new password -->
+    <!-- Campo per la nuova password -->
     <EditText
         android:id="@+id/newPasswordEditText"
         android:layout_width="match_parent"
@@ -34,9 +38,21 @@
         android:hint="New password"
         android:inputType="textPassword"
         android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="8dp"
+        android:textColor="?android:textColorPrimary"
+        android:textColorHint="?android:textColorPrimary" />
 
-    <!-- Field to repeat the new password -->
+    <!-- Feedback sulla forza della nuova password -->
+    <TextView
+        android:id="@+id/passwordStrengthTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="La password deve essere di almeno 8 caratteri."
+        android:textColor="?android:textColorPrimary"
+        android:padding="8dp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Campo per confermare la nuova password -->
     <EditText
         android:id="@+id/repeatNewPasswordEditText"
         android:layout_width="match_parent"
@@ -44,9 +60,11 @@
         android:hint="Repeat new password"
         android:inputType="textPassword"
         android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp"
+        android:textColor="?android:textColorPrimary"
+        android:textColorHint="?android:textColorPrimary" />
 
-    <!-- Button to save the new password -->
+    <!-- Bottone per salvare la nuova password -->
     <Button
         android:id="@+id/savePasswordButton"
         android:layout_width="wrap_content"
@@ -54,5 +72,6 @@
         android:layout_gravity="center"
         android:text="Save"
         android:textColor="?android:colorBackground"
-        android:background="@drawable/rounded_button" />
+        android:background="@drawable/rounded_button"
+        android:padding="12dp" />
 </LinearLayout>

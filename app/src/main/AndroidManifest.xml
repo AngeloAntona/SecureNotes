@@ -2,6 +2,7 @@
     package="com.example.supersecurenotes">
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -9,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SuperSecureNotes">
 
+        <!-- MainActivity con splash screen come tema -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -19,9 +21,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Dichiarazione delle altre attività -->
         <activity android:name=".NotesActivity" />
         <activity android:name=".ModLockActivity" />
         <activity android:name=".VisualizationActivity" />
+
+        <!-- Aggiunta di SetPasswordActivity -->
+        <activity android:name=".SetPasswordActivity" />
 
     </application>
 </manifest>
