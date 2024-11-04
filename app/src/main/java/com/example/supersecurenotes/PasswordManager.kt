@@ -66,7 +66,7 @@ class PasswordManager(private val context: Context) {
             resetFailedAttempts()
             deriveSessionKey(enteredPassword)
             val app = context.applicationContext as MyApplication
-            app.updateLastActiveTime() // Aggiorna l'ultimo tempo di attività
+            app.updateLastActiveTime() // Update the latest uptime
             return true
         }
 

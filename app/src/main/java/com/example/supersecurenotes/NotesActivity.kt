@@ -29,7 +29,7 @@ class NotesActivity : AppCompatActivity() {
         val app = applicationContext as MyApplication
         if (app.isSessionExpired()) {
             app.clearSession()
-            Toast.makeText(this, "Sessione scaduta. Esegui di nuovo l'accesso.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
             navigateToLogin()
             return
         } else {
@@ -48,7 +48,7 @@ class NotesActivity : AppCompatActivity() {
         val app = applicationContext as MyApplication
         if (app.isSessionExpired()) {
             app.clearSession()
-            Toast.makeText(this, "Sessione scaduta. Esegui di nuovo l'accesso.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
             navigateToLogin()
         } else {
             app.updateLastActiveTime()
@@ -62,7 +62,7 @@ class NotesActivity : AppCompatActivity() {
             val app = applicationContext as MyApplication
             if (app.isSessionExpired()) {
                 app.clearSession()
-                Toast.makeText(this, "Sessione scaduta. Esegui di nuovo l'accesso.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
                 navigateToLogin()
             } else {
                 app.updateLastActiveTime()
@@ -77,7 +77,7 @@ class NotesActivity : AppCompatActivity() {
             val app = applicationContext as MyApplication
             if (app.isSessionExpired()) {
                 app.clearSession()
-                Toast.makeText(this, "Sessione scaduta. Esegui di nuovo l'accesso.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
                 navigateToLogin()
             } else {
                 app.updateLastActiveTime()

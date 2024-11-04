@@ -26,7 +26,7 @@ class SetPasswordActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 val password = s.toString()
                 val (isComplex, message) = checkPasswordComplexity(password)
-                passwordStrengthTextView.text = if (isComplex) "Password forte" else message
+                passwordStrengthTextView.text = if (isComplex) "Strong password" else message
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -41,10 +41,10 @@ class SetPasswordActivity : AppCompatActivity() {
                 val (isComplex, message) = checkPasswordComplexity(newPassword)
                 if (isComplex) {
                     passwordManager.setPassword(newPassword)
-                    passwordManager.isPasswordCorrect(newPassword) // Deriva la chiave di sessione
+                    passwordManager.isPasswordCorrect(newPassword)
                     val app = applicationContext as MyApplication
                     app.updateLastActiveTime()
-                    Toast.makeText(this, "Password impostata con successo", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Password set successfully", Toast.LENGTH_SHORT).show()
 
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
@@ -53,7 +53,7 @@ class SetPasswordActivity : AppCompatActivity() {
                     Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                 }
             } else {
-                Toast.makeText(this, "Le password non corrispondono", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -64,25 +64,25 @@ class SetPasswordActivity : AppCompatActivity() {
         val missingRequirements = mutableListOf<String>()
 
         if (password.length < minLength) {
-            missingRequirements.add("almeno $minLength caratteri")
+            missingRequirements.add("at least $minLength characters")
         }
         if (!password.any { it.isUpperCase() }) {
-            missingRequirements.add("una lettera maiuscola")
+            missingRequirements.add("a capital letter")
         }
         if (!password.any { it.isLowerCase() }) {
-            missingRequirements.add("una lettera minuscola")
+            missingRequirements.add("a lowercase letter")
         }
         if (!password.any { it.isDigit() }) {
-            missingRequirements.add("un numero")
+            missingRequirements.add("a number")
         }
         if (!password.any { !it.isLetterOrDigit() }) {
-            missingRequirements.add("un carattere speciale")
+            missingRequirements.add("a special character")
         }
 
         return if (missingRequirements.isEmpty()) {
-            Pair(true, "La password soddisfa tutti i requisiti.")
+            Pair(true, "The password meets all the requirements.")
         } else {
-            val message = "La password deve contenere " + missingRequirements.joinToString(", ") + "."
+            val message = "Password must contain " + missingRequirements.joinToString(", ") + "."
             Pair(false, message)
         }
     }

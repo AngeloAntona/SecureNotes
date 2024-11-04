@@ -27,7 +27,7 @@ class VisualizationActivity : AppCompatActivity() {
         val app = applicationContext as MyApplication
         if (app.isSessionExpired()) {
             app.clearSession()
-            Toast.makeText(this, "Sessione scaduta. Esegui di nuovo l'accesso.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
             navigateToLogin()
             return
         } else {
@@ -50,7 +50,7 @@ class VisualizationActivity : AppCompatActivity() {
             val app = applicationContext as MyApplication
             if (app.isSessionExpired()) {
                 app.clearSession()
-                Toast.makeText(this, "Sessione scaduta. Esegui di nuovo l'accesso.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
                 navigateToLogin()
             } else {
                 app.updateLastActiveTime()
@@ -62,7 +62,7 @@ class VisualizationActivity : AppCompatActivity() {
                 }
 
                 saveEncryptedNote(modifiedTitle, modifiedBody)
-                Toast.makeText(this, "Nota salvata", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }

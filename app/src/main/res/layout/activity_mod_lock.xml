@@ -47,7 +47,7 @@
         android:id="@+id/passwordStrengthTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="La password deve essere di almeno 8 caratteri."
+        android:text="Password must be at least 8 characters."
         android:textColor="?android:textColorPrimary"
         android:padding="8dp"
         android:layout_marginBottom="16dp" />

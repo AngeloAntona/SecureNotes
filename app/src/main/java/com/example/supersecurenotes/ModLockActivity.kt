@@ -1,7 +1,7 @@
 package com.example.supersecurenotes
 
 import android.content.Context
-import android.content.Intent // Aggiungi questa riga per risolvere l'errore
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
@@ -27,7 +27,7 @@ class ModLockActivity : AppCompatActivity() {
         val app = applicationContext as MyApplication
         if (app.isSessionExpired()) {
             app.clearSession()
-            Toast.makeText(this, "Sessione scaduta. Esegui di nuovo l'accesso.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
             navigateToLogin()
             return
         } else {
@@ -43,12 +43,12 @@ class ModLockActivity : AppCompatActivity() {
         val confirmPasswordEditText = findViewById<EditText>(R.id.repeatNewPasswordEditText)
         val saveButton = findViewById<Button>(R.id.savePasswordButton)
 
-        // Monitoraggio della forza della nuova password mentre l'utente digita
+        // Monitoring the strength of the new password as the user types
         newPasswordEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val password = s.toString()
                 val (isComplex, message) = checkPasswordComplexity(password)
-                passwordStrengthTextView.text = if (isComplex) "Password forte" else message
+                passwordStrengthTextView.text = if (isComplex) "Strong password" else message
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -64,30 +64,30 @@ class ModLockActivity : AppCompatActivity() {
                 if (newPassword == confirmPassword) {
                     val (isComplex, message) = checkPasswordComplexity(newPassword)
                     if (isComplex) {
-                        // 1. Decrittografa tutte le note con la vecchia chiave di sessione
+                        // 1. Decrypt all notes with the old session key
                         val decryptedNotes = decryptAllNotes()
 
                         if (decryptedNotes != null) {
-                            // 2. Aggiorna la password e deriva la nuova chiave di sessione
+                            // 2. Update password and derive new session key
                             passwordManager.setPassword(newPassword)
-                            passwordManager.isPasswordCorrect(newPassword) // Deriva la nuova chiave di sessione
+                            passwordManager.isPasswordCorrect(newPassword) // Derive the new session key
 
-                            // 3. Ricrittografa tutte le note con la nuova chiave di sessione
+                            // 3. Re-encrypt all notes with the new session key
                             reEncryptAllNotes(decryptedNotes)
 
-                            Toast.makeText(this, "Password aggiornata con successo", Toast.LENGTH_SHORT).show()
-                            finish() // Torna all'attività precedente
+                            Toast.makeText(this, "Password updated successfully", Toast.LENGTH_SHORT).show()
+                            finish()
                         } else {
-                            Toast.makeText(this, "Errore durante la decrittografia delle note", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "Error while decrypting notes", Toast.LENGTH_LONG).show()
                         }
                     } else {
                         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                     }
                 } else {
-                    Toast.makeText(this, "Le nuove password non corrispondono", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "New passwords do not match", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(this, "La password attuale è errata", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "The current password is incorrect", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -99,36 +99,36 @@ class ModLockActivity : AppCompatActivity() {
         finish()
     }
 
-    // Funzione per verificare la complessità della password
+    // Password complexity check function
     private fun checkPasswordComplexity(password: String): Pair<Boolean, String> {
         val minLength = 8
         val missingRequirements = mutableListOf<String>()
 
         if (password.length < minLength) {
-            missingRequirements.add("almeno $minLength caratteri")
+            missingRequirements.add("at least $minLength characters")
         }
         if (!password.any { it.isUpperCase() }) {
-            missingRequirements.add("una lettera maiuscola")
+            missingRequirements.add("a capital letter")
         }
         if (!password.any { it.isLowerCase() }) {
-            missingRequirements.add("una lettera minuscola")
+            missingRequirements.add("a lowercase letter")
         }
         if (!password.any { it.isDigit() }) {
-            missingRequirements.add("un numero")
+            missingRequirements.add("a number")
         }
         if (!password.any { !it.isLetterOrDigit() }) {
-            missingRequirements.add("un carattere speciale")
+            missingRequirements.add("a special character")
         }
 
         return if (missingRequirements.isEmpty()) {
-            Pair(true, "La password soddisfa tutti i requisiti.")
+            Pair(true, "The password meets all the requirements.")
         } else {
-            val message = "La password deve contenere " + missingRequirements.joinToString(", ") + "."
+            val message = "Password must contain " + missingRequirements.joinToString(", ") + "."
             Pair(false, message)
         }
     }
 
-    // Funzione per decrittografare tutte le note esistenti
+    // Function to decrypt all existing notes
     private fun decryptAllNotes(): Map<String, String>? {
         val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf()) ?: return null
         val decryptedNotes = mutableMapOf<String, String>()
@@ -140,14 +140,14 @@ class ModLockActivity : AppCompatActivity() {
                 if (content != null) {
                     decryptedNotes[title] = content
                 } else {
-                    return null // Errore durante la decrittografia
+                    return null // Error during decryption
                 }
             }
         }
         return decryptedNotes
     }
 
-    // Funzione per ricrittografare tutte le note con la nuova chiave di sessione
+    // Function to encrypt all notes with new session key
     private fun reEncryptAllNotes(decryptedNotes: Map<String, String>) {
         for ((title, content) in decryptedNotes) {
             val encryptedContent = encryptNoteContent(content)

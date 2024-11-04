@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
             val enteredPassword = passwordEditText.text.toString()
 
             if (passwordManager.isLockedOut()) {
-                Toast.makeText(this, "Account bloccato. Riprova più tardi.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Account blocked. Try again later.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             } else {
-                Toast.makeText(this, "Password errata", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT).show()
             }
         }
     }
