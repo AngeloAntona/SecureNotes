@@ -307,10 +307,10 @@ class MyApplication : Application() {
 ```
 #### New Class Scheme
 The new class diagram is as follows:
-![New Class Scheme](ReadmeFiles/NewScheme.jpg)
+![New Class Scheme](ReadmeFiles/NewScheme.png)
 
 ___
-## Exploiting Vulnerabilities
+## Exploiting Vulnerabilities of the Old Implementation
 As we have seen, the old code contains several vulnerabilities. Below are some ways to exploit these vulnerabilities to gain unauthorized access to notes.
 #### Physical Access Attacks and Device Compromise
 This type of attack is possible because:
