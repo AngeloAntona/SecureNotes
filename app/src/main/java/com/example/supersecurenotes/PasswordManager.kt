@@ -23,7 +23,7 @@ class PasswordManager(private val context: Context) {
         private const val ATTEMPT_COUNT_KEY = "failed_attempts"
         private const val LAST_FAILED_ATTEMPT_TIME_KEY = "last_failed_attempt_time"
         private const val MAX_ATTEMPTS = 5
-        private const val LOCKOUT_DURATION = 60000L // 1 minuto
+        private const val LOCKOUT_DURATION = 60000L // 1 minute
     }
 
     init {
