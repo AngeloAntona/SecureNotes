@@ -94,6 +94,41 @@ class PasswordManager(private val context: Context) {
             .apply()
     }
 
+    fun deriveSessionKeyWithoutStoring(password: String): ByteArray? {
+        val pbkdf2SaltString = sharedPreferences.getString(PBKDF2_SALT_KEY, null) ?: return null
+        val pbkdf2Salt = Base64.decode(pbkdf2SaltString, Base64.DEFAULT)
+        return try {
+            val spec = PBEKeySpec(password.toCharArray(), pbkdf2Salt, PBKDF2_ITERATIONS, KEY_LENGTH)
+            val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            factory.generateSecret(spec).encoded
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun getPasswordHash(): String? {
+        return sharedPreferences.getString(PASSWORD_HASH_KEY, null)
+    }
+
+    fun getPbkdf2Salt(): String? {
+        return sharedPreferences.getString(PBKDF2_SALT_KEY, null)
+    }
+
+    fun restoreOldPassword(oldPasswordHash: String?, oldPbkdf2Salt: String?): Boolean {
+        if (oldPasswordHash == null || oldPbkdf2Salt == null) return false
+        sharedPreferences.edit()
+            .putString(PASSWORD_HASH_KEY, oldPasswordHash)
+            .putString(PBKDF2_SALT_KEY, oldPbkdf2Salt)
+            .apply()
+        return true
+    }
+
+    fun setSessionKey(key: ByteArray?) {
+        val app = context.applicationContext as MyApplication
+        app.sessionKey = key
+    }
+
     private fun deriveSessionKey(password: String) {
         val pbkdf2SaltString = sharedPreferences.getString(PBKDF2_SALT_KEY, null) ?: return
         val pbkdf2Salt = Base64.decode(pbkdf2SaltString, Base64.DEFAULT)

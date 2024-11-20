@@ -43,12 +43,12 @@ class ModLockActivity : AppCompatActivity() {
         val confirmPasswordEditText = findViewById<EditText>(R.id.repeatNewPasswordEditText)
         val saveButton = findViewById<Button>(R.id.savePasswordButton)
 
-        // Monitoring the strength of the new password as the user types
+        // Monitoring the strength of the new password during typing
         newPasswordEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val password = s.toString()
                 val (isComplex, message) = checkPasswordComplexity(password)
-                passwordStrengthTextView.text = if (isComplex) "Strong password" else message
+                passwordStrengthTextView.text = if (isComplex) "Strong Password" else message
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -64,27 +64,18 @@ class ModLockActivity : AppCompatActivity() {
                 if (newPassword == confirmPassword) {
                     val (isComplex, message) = checkPasswordComplexity(newPassword)
                     if (isComplex) {
-                        // 1. Decrypt all notes with the old session key
-                        val decryptedNotes = decryptAllNotes()
-
-                        if (decryptedNotes != null) {
-                            // 2. Update password and derive new session key
-                            passwordManager.setPassword(newPassword)
-                            passwordManager.isPasswordCorrect(newPassword) // Derive the new session key
-
-                            // 3. Re-encrypt all notes with the new session key
-                            reEncryptAllNotes(decryptedNotes)
-
+                        // Attempting to re-encrypt notes with the new password
+                        if (reEncryptNotesWithNewPassword(newPassword, oldPassword)) {
                             Toast.makeText(this, "Password updated successfully", Toast.LENGTH_SHORT).show()
                             finish()
                         } else {
-                            Toast.makeText(this, "Error while decrypting notes", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "Error during note re-encryption", Toast.LENGTH_LONG).show()
                         }
                     } else {
                         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                     }
                 } else {
-                    Toast.makeText(this, "New passwords do not match", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "The new passwords do not match", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Toast.makeText(this, "The current password is incorrect", Toast.LENGTH_SHORT).show()
@@ -99,7 +90,7 @@ class ModLockActivity : AppCompatActivity() {
         finish()
     }
 
-    // Password complexity check function
+    // Function to check password complexity
     private fun checkPasswordComplexity(password: String): Pair<Boolean, String> {
         val minLength = 8
         val missingRequirements = mutableListOf<String>()
@@ -108,7 +99,7 @@ class ModLockActivity : AppCompatActivity() {
             missingRequirements.add("at least $minLength characters")
         }
         if (!password.any { it.isUpperCase() }) {
-            missingRequirements.add("a capital letter")
+            missingRequirements.add("an uppercase letter")
         }
         if (!password.any { it.isLowerCase() }) {
             missingRequirements.add("a lowercase letter")
@@ -121,40 +112,10 @@ class ModLockActivity : AppCompatActivity() {
         }
 
         return if (missingRequirements.isEmpty()) {
-            Pair(true, "The password meets all the requirements.")
+            Pair(true, "The password meets all requirements.")
         } else {
-            val message = "Password must contain " + missingRequirements.joinToString(", ") + "."
+            val message = "The password must contain " + missingRequirements.joinToString(", ") + "."
             Pair(false, message)
-        }
-    }
-
-    // Function to decrypt all existing notes
-    private fun decryptAllNotes(): Map<String, String>? {
-        val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf()) ?: return null
-        val decryptedNotes = mutableMapOf<String, String>()
-
-        for (title in noteTitles) {
-            val encodedContent = sharedPreferences.getString(title, null)
-            if (encodedContent != null) {
-                val content = decryptNoteContent(encodedContent)
-                if (content != null) {
-                    decryptedNotes[title] = content
-                } else {
-                    return null // Error during decryption
-                }
-            }
-        }
-        return decryptedNotes
-    }
-
-    // Function to encrypt all notes with new session key
-    private fun reEncryptAllNotes(decryptedNotes: Map<String, String>) {
-        for ((title, content) in decryptedNotes) {
-            val encryptedContent = encryptNoteContent(content)
-            if (encryptedContent != null) {
-                val encodedContent = Base64.encodeToString(encryptedContent, Base64.DEFAULT)
-                sharedPreferences.edit().putString(title, encodedContent).apply()
-            }
         }
     }
 
@@ -162,8 +123,64 @@ class ModLockActivity : AppCompatActivity() {
         return passwordManager.getSessionKey()
     }
 
-    private fun encryptNoteContent(content: String): ByteArray? {
-        val key = getSessionKey() ?: return null
+    // Function to re-encrypt notes with the new password
+    private fun reEncryptNotesWithNewPassword(newPassword: String, oldPassword: String): Boolean {
+        val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf()) ?: return false
+
+        // Retrieve the old session key
+        val oldSessionKey = getSessionKey()
+        if (oldSessionKey == null) {
+            return false
+        }
+
+        // Temporarily save the old password hash and old PBKDF2 salt
+        val oldPasswordHash = passwordManager.getPasswordHash()
+        val oldPbkdf2Salt = passwordManager.getPbkdf2Salt()
+
+        // Set the new password, which updates the hash and generates a new PBKDF2 salt
+        passwordManager.setPassword(newPassword)
+
+        // Derive the new session key based on the new password and new PBKDF2 salt
+        val newSessionKey = passwordManager.deriveSessionKeyWithoutStoring(newPassword)
+        if (newSessionKey == null) {
+            // In case of error, restore the old password and salt
+            passwordManager.restoreOldPassword(oldPasswordHash, oldPbkdf2Salt)
+            return false
+        }
+
+        // Process each note individually
+        for (title in noteTitles) {
+            val encodedContent = sharedPreferences.getString(title, null)
+            if (encodedContent != null) {
+                // Decrypt with the old session key
+                val content = decryptNoteContent(encodedContent, oldSessionKey)
+                if (content != null) {
+                    // Encrypt with the new session key
+                    val encryptedContent = encryptNoteContent(content, newSessionKey)
+                    if (encryptedContent != null) {
+                        val encodedNewContent = Base64.encodeToString(encryptedContent, Base64.DEFAULT)
+                        sharedPreferences.edit().putString(title, encodedNewContent).apply()
+                    } else {
+                        // In case of encryption error, restore the old password and salt
+                        passwordManager.restoreOldPassword(oldPasswordHash, oldPbkdf2Salt)
+                        return false
+                    }
+                } else {
+                    // In case of decryption error, restore the old password and salt
+                    passwordManager.restoreOldPassword(oldPasswordHash, oldPbkdf2Salt)
+                    return false
+                }
+            }
+        }
+
+        // Set the new session key in the application's session
+        passwordManager.setSessionKey(newSessionKey)
+
+        return true
+    }
+
+    private fun encryptNoteContent(content: String, key: ByteArray?): ByteArray? {
+        if (key == null) return null
         return try {
             val secretKey = SecretKeySpec(key, "AES")
             val cipher = Cipher.getInstance("AES/GCM/NoPadding")
@@ -177,9 +194,9 @@ class ModLockActivity : AppCompatActivity() {
         }
     }
 
-    private fun decryptNoteContent(encodedData: String): String? {
+    private fun decryptNoteContent(encodedData: String, key: ByteArray?): String? {
+        if (key == null) return null
         val encryptedData = Base64.decode(encodedData, Base64.DEFAULT)
-        val key = getSessionKey() ?: return null
         return try {
             val secretKey = SecretKeySpec(key, "AES")
             val cipher = Cipher.getInstance("AES/GCM/NoPadding")
