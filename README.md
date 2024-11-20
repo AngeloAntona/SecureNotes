@@ -174,4 +174,5 @@ The **NoteApp** is a secure notepad application designed to protect user notes w
 - **Error Handling**: Provides user-friendly error messages without revealing sensitive information.
 
 ## Class Diagram
-![New Class Scheme](ReadmeFiles/NewScheme.png)
+![New Class Scheme](ReadmeFiles/CompleteClassDIagram.png)
+(The pdf of the Class Diagram is available [here](ReadmeFiles/CompleteClassDIagram.pdf))
