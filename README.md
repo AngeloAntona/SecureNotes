@@ -1,178 +1,131 @@
-# NoteApp Implementation and Functionalities
+# Overview
+The NoteApp is a secure notepad application designed to protect user notes with robust security features. The app requires biometric authentication to access notes and provides functionality for creating, viewing, editing, and deleting notes.
 
-## Overview
+# Functionalities
 
-The **NoteApp** is a secure notepad application designed to protect user notes with robust security features. The app requires authentication to access notes and provides functionality for creating, viewing, editing, and deleting notes.
+Login Screen (MainActivity)
+* Authentication: Users must authenticate using their biometric credentials (e.g., fingerprint) to access the app’s features.
+* Biometric Prompt: Utilizes Android’s BiometricPrompt API to handle secure and user-friendly biometric authentication.
 
-## Functionalities
+Notes Screen (NotesActivity)
+* Viewing Notes: Displays a list of all saved notes. Each note is represented by its title.
+* Creating a New Note: Users can add a new note using the + button, which opens a screen to input the title and content.
+* Editing a Note: Tapping an existing note allows users to view and edit its content.
+* Deleting a Note: Long-pressing a note brings up a confirmation to delete it.
+* Manual Lock: Users can manually lock the app using the Lock button, requiring re-authentication to access notes again.
 
-### First-Time Setup
+Visualization Screen (VisualizationActivity)
+* Note Management: Allows users to create a new note or edit an existing one by entering the title and content.
+* Secure Saving: Notes are encrypted before being saved to ensure confidentiality and integrity.
 
-- **Password Initialization**: On the first launch, the app prompts the user to set up a new password. There is no default password, enhancing security by ensuring only the user knows their password.
+#Security Functionalities
 
-![First login](ReadmeFiles/FirstAccessScreen.jpg)
+## Biometric Authentication
+* Secure Access: Utilizes Android’s BiometricPrompt to ensure that only authorized users can access the app.
+```
+promptInfo = BiometricPrompt.PromptInfo.Builder()
+    .setTitle("Login biometrico per Secure Notes")
+    .setSubtitle("Accedi usando le tue credenziali biometriche")
+    .setNegativeButtonText("Annulla")
+    .build()
+	•	Authentication Callbacks: Handles success, error, and failure scenarios to provide appropriate user feedback and access control.
 
+biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
 
-### Login Screen (*MainActivity*)
-
-- **Authentication**: Users must enter their password to access the app's features.
-- **Access Attempt Limitation**: The app limits failed login attempts. After a certain number of incorrect entries (e.g., 5 attempts), the account is temporarily locked.
-
-### Notes Screen (*NotesActivity*)
-
-- **Viewing Notes**: Displays a list of all saved notes. Each note is represented by its title.
-- **Creating a New Note**: Users can add a new note using the **+** button, which opens a screen to input the title and content.
-- **Editing a Note**: Tapping an existing note allows users to view and edit its content.
-- **Deleting a Note**: Long-pressing a note brings up a confirmation to delete it.
-- **Changing Password**: Users can change their password via the **M** button, leading to the *ChangePasswordActivity*.
-
-![Notes Screen](ReadmeFiles/NotesScreen.jpg)
-
-
-### Change Password Screen (*ChangePasswordActivity*)
-
-- **Password Update**: Users can update their password by entering the current password and a new password that meets complexity requirements.
-
-![Change Password](ReadmeFiles/ChangePasswordScreen.jpg)
-
-
-## Security Functionalities
-
-### Password Security
-
-- **Secure Password Storage**: Passwords are hashed using bcrypt with a configurable cost factor, preventing storage of plaintext passwords and resisting brute-force attacks.
-
-    ```kotlin
-    import org.mindrot.jbcrypt.BCrypt
-
-    fun setPassword(newPassword: String) {
-        val passwordHash = BCrypt.hashpw(newPassword, BCrypt.gensalt(BCRYPT_COST))
-        sharedPreferences.edit().putString(PASSWORD_HASH_KEY, passwordHash).apply()
+    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+        super.onAuthenticationError(errorCode, errString)
+        Toast.makeText(applicationContext, "Errore di autenticazione: $errString", Toast.LENGTH_SHORT).show()
     }
 
-    fun isPasswordCorrect(enteredPassword: String): Boolean {
-        val storedHash = sharedPreferences.getString(PASSWORD_HASH_KEY, null)
-        return if (storedHash != null) {
-            BCrypt.checkpw(enteredPassword, storedHash)
-        } else {
-            false
-        }
-    }
-    ```
-
-- **Password Complexity Requirements**: The app enforces complexity rules, requiring passwords to be at least 8 characters and include uppercase letters, lowercase letters, numbers, and special characters.
-
-    ```kotlin
-    fun checkPasswordComplexity(password: String): Pair<Boolean, String> {
-        val complexityRegex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&+=]).{8,}\$")
-        val isValid = complexityRegex.matches(password)
-        val message = if (isValid) "Password is valid." else "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
-        return Pair(isValid, message)
-    }
-    ```
-
-- **No Default Password**: Eliminated the use of a default password to prevent unauthorized access through default credentials.
-
-### Note Encryption
-
-- **Encryption Key Derived from Password**: Notes are encrypted using a key derived from the user's password via PBKDF2, ensuring notes can't be decrypted without the correct password.
-
-    ```kotlin
-    fun deriveSessionKey(password: String) {
-        val pbkdf2SaltString = sharedPreferences.getString(PBKDF2_SALT_KEY, null)
-        val pbkdf2Salt = Base64.decode(pbkdf2SaltString, Base64.DEFAULT)
-        val spec = PBEKeySpec(password.toCharArray(), pbkdf2Salt, PBKDF2_ITERATIONS, KEY_LENGTH)
-        val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-        val key = factory.generateSecret(spec).encoded
-
-        val app = context.applicationContext as MyApplication
-        app.sessionKey = key
-    }
-    ```
-
-- **Secure Note Storage**: Notes are encrypted with AES-256 in GCM mode, providing both confidentiality and integrity.
-
-    ```kotlin
-    fun encryptNoteContent(content: String): String {
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        val iv = ByteArray(12).apply { SecureRandom().nextBytes(this) }
-        val spec = GCMParameterSpec(128, iv)
-        cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(app.sessionKey, "AES"), spec)
-        val encrypted = cipher.doFinal(content.toByteArray(Charsets.UTF_8))
-        return Base64.encodeToString(iv + encrypted, Base64.DEFAULT)
+    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+        super.onAuthenticationSucceeded(result)
+        val app = applicationContext as MyApplication
+        app.updateLastActiveTime()
+        val intent = Intent(this@MainActivity, NotesActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
-    fun decryptNoteContent(encryptedContent: String): String {
-        val decoded = Base64.decode(encryptedContent, Base64.DEFAULT)
-        val iv = decoded.copyOfRange(0, 12)
-        val encrypted = decoded.copyOfRange(12, decoded.size)
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        val spec = GCMParameterSpec(128, iv)
-        cipher.init(Cipher.DECRYPT_MODE, SecretKeySpec(app.sessionKey, "AES"), spec)
-        val decrypted = cipher.doFinal(encrypted)
-        return String(decrypted, Charsets.UTF_8)
+    override fun onAuthenticationFailed() {
+        super.onAuthenticationFailed()
+        Toast.makeText(applicationContext, "Autenticazione fallita", Toast.LENGTH_SHORT).show()
     }
-    ```
+})
 
-### Access Control
+```
 
-- **Limited Login Attempts**: Implements a lockout policy after multiple failed login attempts.
+## Note Encryption
+* Encryption Key Management: Utilizes Android’s KeyStore to generate and store a secure AES-256 key used for encrypting and decrypting notes.
+```
+private fun createSecretKey(): SecretKey? {
+    val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
+    val keyGenParameterSpec = KeyGenParameterSpec.Builder(
+        KEY_ALIAS,
+        KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+    )
+        .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+        .build()
+    keyGenerator.init(keyGenParameterSpec)
+    return keyGenerator.generateKey()
+}
+```
 
-    ```kotlin
-    private val MAX_ATTEMPTS = 5
-    private val LOCKOUT_DURATION = 1 * 60 * 1000 // 1 minute
+* Secure Note Storage: Notes are encrypted with AES-256 in GCM mode, providing both confidentiality and integrity.
+```
+fun encryptNoteContent(content: String): String {
+    val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+    val iv = ByteArray(12).apply { SecureRandom().nextBytes(this) }
+    val spec = GCMParameterSpec(128, iv)
+    cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(app.sessionKey, "AES"), spec)
+    val encrypted = cipher.doFinal(content.toByteArray(Charsets.UTF_8))
+    return Base64.encodeToString(iv + encrypted, Base64.DEFAULT)
+}
 
-    fun recordFailedAttempt() {
-        var failedAttempts = sharedPreferences.getInt(ATTEMPT_COUNT_KEY, 0) + 1
-        sharedPreferences.edit().putInt(ATTEMPT_COUNT_KEY, failedAttempts).apply()
-        if (failedAttempts >= MAX_ATTEMPTS) {
-            sharedPreferences.edit().putLong(LOCKOUT_TIME_KEY, System.currentTimeMillis()).apply()
-        }
+fun decryptNoteContent(encryptedContent: String): String {
+    val decoded = Base64.decode(encryptedContent, Base64.DEFAULT)
+    val iv = decoded.copyOfRange(0, 12)
+    val encrypted = decoded.copyOfRange(12, decoded.size)
+    val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+    val spec = GCMParameterSpec(128, iv)
+    cipher.init(Cipher.DECRYPT_MODE, SecretKeySpec(app.sessionKey, "AES"), spec)
+    val decrypted = cipher.doFinal(encrypted)
+    return String(decrypted, Charsets.UTF_8)
+}
+
+```
+
+## Access Control
+* Session Management: Implements a session timeout mechanism that requires users to re-authenticate after a period of inactivity (e.g., 5 minutes).
+```
+class MyApplication : Application() {
+    var lastActiveTime: Long = System.currentTimeMillis()
+
+    companion object {
+        private const val SESSION_TIMEOUT_DURATION = 5 * 60 * 1000 // 5 minuti
     }
 
-    fun isLockedOut(): Boolean {
-        val failedAttempts = sharedPreferences.getInt(ATTEMPT_COUNT_KEY, 0)
-        val lockoutTime = sharedPreferences.getLong(LOCKOUT_TIME_KEY, 0)
-        val currentTime = System.currentTimeMillis()
-        return failedAttempts >= MAX_ATTEMPTS && (currentTime - lockoutTime) < LOCKOUT_DURATION
+    fun isSessionExpired(): Boolean {
+        return (System.currentTimeMillis() - lastActiveTime) > SESSION_TIMEOUT_DURATION
     }
-    ```
 
-- **Session Management**: Requires re-authentication after a period of inactivity.
-
-    ```kotlin
-    class MyApplication : Application() {
-        var sessionKey: ByteArray? = null
-        var lastActiveTime: Long = System.currentTimeMillis()
-
-        companion object {
-            private const val SESSION_TIMEOUT_DURATION = 5 * 60 * 1000 // 5 minutes
-        }
-
-        fun isSessionExpired(): Boolean {
-            return (System.currentTimeMillis() - lastActiveTime) > SESSION_TIMEOUT_DURATION
-        }
-
-        fun updateLastActiveTime() {
-            lastActiveTime = System.currentTimeMillis()
-        }
-
-        fun clearSession() {
-            sessionKey = null
-            lastActiveTime = 0L
-        }
+    fun updateLastActiveTime() {
+        lastActiveTime = System.currentTimeMillis()
     }
-    ```
 
-- **Mandatory Authentication for Password Change**: Users must enter their current password to change it, preventing unauthorized password changes.
+    fun clearSession() {
+        lastActiveTime = 0L
+    }
+}
+```
+Manual Locking: Users can manually lock the app at any time, requiring re-authentication to regain access.
 
-### Secure Coding Practices
+## Secure Coding Practices
+* Use of Reliable Libraries: Utilizes Android’s BiometricPrompt and KeyStore for robust authentication and encryption.
+* Input Protection: Ensures that all sensitive inputs (e.g., note contents) are handled securely and encrypted before storage.
+* No Sensitive Data in Logs: Avoids logging sensitive information such as encryption keys or decrypted note contents.
+* Error Handling: Provides user-friendly error messages without exposing sensitive details or internal states.
 
-- **Use of Reliable Libraries**: Utilizes established cryptographic libraries like `BCrypt` and `javax.crypto`.
-- **Input Protection**: Masks password inputs and securely handles sensitive data.
-- **No Sensitive Data in Logs**: Avoids logging passwords or encryption keys.
-- **Error Handling**: Provides user-friendly error messages without revealing sensitive information.
+# Class Diagram
 
-## Class Diagram
-![New Class Scheme](ReadmeFiles/CompleteClassDIagram.png)
-(The pdf of the Class Diagram is available [here](ReadmeFiles/CompleteClassDIagram.pdf))
+(The PDF of the Class Diagram is available here)
