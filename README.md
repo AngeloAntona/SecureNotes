@@ -128,4 +128,4 @@ Manual Locking: Users can manually lock the app at any time, requiring re-authen
 
 # Class Diagram
 
-(The PDF of the Class Diagram is available here)
+(The PDF of the Class Diagram is available here)[ReadmeFiles/NewScheme.png]
