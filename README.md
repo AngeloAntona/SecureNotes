@@ -2,6 +2,7 @@
 The NoteApp is a secure notepad application designed to protect user notes with robust security features. The app requires biometric authentication to access notes and provides functionality for creating, viewing, editing, and deleting notes.
 
 # Functionalities
+![fingerprint screens](ReadmeFiles/fingerprint_interfaces.jpg)
 
 **Login Screen (MainActivity)**
 * **Authentication**: Users must authenticate using their biometric credentials (e.g., fingerprint) to access the app’s features.
