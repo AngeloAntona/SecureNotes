@@ -12,15 +12,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import javax.crypto.Cipher
-import javax.crypto.spec.GCMParameterSpec
-import javax.crypto.spec.SecretKeySpec
 
 class NotesActivity : AppCompatActivity() {
-    private lateinit var passwordManager: PasswordManager
+
     private lateinit var sharedPreferences: SharedPreferences
     private val noteTitlesKey = "noteTitlesKey"
-    private val GCM_TAG_LENGTH = 128
+    private val encryptionManager = EncryptionManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,14 +26,13 @@ class NotesActivity : AppCompatActivity() {
         val app = applicationContext as MyApplication
         if (app.isSessionExpired()) {
             app.clearSession()
-            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Sessione scaduta. Effettua nuovamente l'accesso.", Toast.LENGTH_SHORT).show()
             navigateToLogin()
             return
         } else {
             app.updateLastActiveTime()
         }
 
-        passwordManager = PasswordManager(applicationContext)
         sharedPreferences = getSharedPreferences("notes_prefs", Context.MODE_PRIVATE)
 
         initializeButtons()
@@ -48,7 +44,7 @@ class NotesActivity : AppCompatActivity() {
         val app = applicationContext as MyApplication
         if (app.isSessionExpired()) {
             app.clearSession()
-            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Sessione scaduta. Effettua nuovamente l'accesso.", Toast.LENGTH_SHORT).show()
             navigateToLogin()
         } else {
             app.updateLastActiveTime()
@@ -62,7 +58,7 @@ class NotesActivity : AppCompatActivity() {
             val app = applicationContext as MyApplication
             if (app.isSessionExpired()) {
                 app.clearSession()
-                Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Sessione scaduta. Effettua nuovamente l'accesso.", Toast.LENGTH_SHORT).show()
                 navigateToLogin()
             } else {
                 app.updateLastActiveTime()
@@ -72,24 +68,12 @@ class NotesActivity : AppCompatActivity() {
             }
         }
 
-        val changePasswordButton = findViewById<Button>(R.id.changePasswordButton)
-        changePasswordButton.setOnClickListener {
+        val lockButton = findViewById<Button>(R.id.lockButton)
+        lockButton.setOnClickListener {
             val app = applicationContext as MyApplication
-            if (app.isSessionExpired()) {
-                app.clearSession()
-                Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
-                navigateToLogin()
-            } else {
-                app.updateLastActiveTime()
-                val intent = Intent(this, ModLockActivity::class.java)
-                startActivity(intent)
-            }
+            app.clearSession()
+            navigateToLogin()
         }
-    }
-
-    private fun getSessionKey(): ByteArray? {
-        val app = applicationContext as MyApplication
-        return app.sessionKey
     }
 
     private fun navigateToLogin() {
@@ -105,7 +89,7 @@ class NotesActivity : AppCompatActivity() {
         val emptyTextView = findViewById<TextView>(R.id.emptyTextView)
 
         if (noteTitles.isEmpty()) {
-            emptyTextView.text = "No notes available"
+            emptyTextView.text = "Nessuna nota disponibile"
             emptyTextView.visibility = TextView.VISIBLE
         } else {
             emptyTextView.visibility = TextView.GONE
@@ -125,7 +109,7 @@ class NotesActivity : AppCompatActivity() {
                     intent.putExtra("noteContent", content)
                     startActivity(intent)
                 } else {
-                    Toast.makeText(this, "Decryption failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Decrittazione fallita", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -137,39 +121,17 @@ class NotesActivity : AppCompatActivity() {
         }
     }
 
-    private fun encryptNoteContent(content: String): ByteArray? {
-        val key = getSessionKey() ?: run {
-            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
-            finish()
-            return null
-        }
-        return try {
-            val secretKey = SecretKeySpec(key, "AES")
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-            val iv = cipher.iv
-            val ciphertext = cipher.doFinal(content.toByteArray())
-            iv + ciphertext
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
     private fun decryptNoteContent(encodedData: String): String? {
         val encryptedData = Base64.decode(encodedData, Base64.DEFAULT)
-        val key = getSessionKey() ?: run {
-            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
-            finish()
-            return null
-        }
         return try {
-            val secretKey = SecretKeySpec(key, "AES")
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
             val iv = encryptedData.sliceArray(0 until 12)
             val encryptedText = encryptedData.sliceArray(12 until encryptedData.size)
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(GCM_TAG_LENGTH, iv))
-            String(cipher.doFinal(encryptedText))
+            val cipher = encryptionManager.getDecryptCipher(iv)
+            if (cipher != null) {
+                String(cipher.doFinal(encryptedText))
+            } else {
+                null
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -183,9 +145,9 @@ class NotesActivity : AppCompatActivity() {
         noteTitles: MutableList<String>
     ) {
         val dialogBuilder = AlertDialog.Builder(this)
-        dialogBuilder.setMessage("Do you really want to delete the note \"$noteTitle\"?")
+        dialogBuilder.setMessage("Vuoi davvero eliminare la nota \"$noteTitle\"?")
             .setCancelable(false)
-            .setPositiveButton("Yes") { dialog, _ ->
+            .setPositiveButton("Sì") { dialog, _ ->
                 deleteNote(noteTitle)
                 noteTitles.removeAt(position)
                 adapter.notifyDataSetChanged()
@@ -196,7 +158,7 @@ class NotesActivity : AppCompatActivity() {
             }
 
         val alert = dialogBuilder.create()
-        alert.setTitle("Delete Note")
+        alert.setTitle("Elimina Nota")
         alert.show()
     }
 

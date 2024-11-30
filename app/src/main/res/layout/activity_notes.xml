@@ -3,18 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- TextView for the empty list message -->
+    <!-- TextView per il messaggio di lista vuota -->
     <TextView
         android:id="@+id/emptyTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No notes available"
+        android:text="Nessuna nota disponibile"
         android:visibility="gone"
         android:layout_centerInParent="true"
         android:textSize="18sp"
         android:textColor="?android:textColorPrimary" />
 
-    <!-- ListView for notes -->
+    <!-- ListView per le note -->
     <ListView
         android:id="@+id/notesListView"
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         android:layout_alignParentTop="true"
         android:padding="16dp"/>
 
-    <!-- Button to create a new note in the bottom left -->
+    <!-- Bottone per creare una nuova nota in basso a sinistra -->
     <Button
         android:id="@+id/newNoteButton"
         android:layout_width="wrap_content"
@@ -37,14 +37,14 @@
         android:background="@drawable/rounded_button"
         android:layout_margin="16dp"/>
 
-    <!-- Button to change the password in the bottom right -->
+    <!-- Bottone per bloccare l'app in basso a destra -->
     <Button
-        android:id="@+id/changePasswordButton"
+        android:id="@+id/lockButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:text="M"
+        android:text="Blocca"
         android:textSize="14sp"
         android:textColor="?android:colorBackground"
         android:background="@drawable/rounded_button"

@@ -6,26 +6,15 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="16dp"
-    android:background="?android:colorBackground"> <!-- Layout background using the color set in the theme -->
+    android:background="?android:colorBackground">
 
-    <!-- Password input field -->
-    <EditText
-        android:id="@+id/passwordEditText"
-        android:layout_width="match_parent"
+    <!-- Messaggio per l'utente -->
+    <TextView
+        android:id="@+id/biometricPromptMessage"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Enter password"
-        android:inputType="textPassword"
-        android:textColor="?android:textColorPrimary"
-        android:textColorHint="?android:textColorPrimary"
-        android:minHeight="48dp" />
+        android:text="Autenticati utilizzando la tua impronta digitale"
+        android:textSize="18sp"
+        android:textColor="?android:textColorPrimary"/>
 
-    <!-- Login button -->
-    <Button
-        android:id="@+id/loginButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        android:textColor="?android:colorBackground"
-        android:background="@drawable/rounded_button"
-        android:layout_marginTop="16dp"/>
 </LinearLayout>

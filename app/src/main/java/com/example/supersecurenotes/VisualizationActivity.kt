@@ -9,16 +9,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import javax.crypto.Cipher
-import javax.crypto.spec.GCMParameterSpec
-import javax.crypto.spec.SecretKeySpec
 
 class VisualizationActivity : AppCompatActivity() {
 
-    private lateinit var passwordManager: PasswordManager
     private lateinit var sharedPreferences: SharedPreferences
     private val noteTitlesKey = "noteTitlesKey"
-    private val GCM_TAG_LENGTH = 128
+    private val encryptionManager = EncryptionManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,14 +23,13 @@ class VisualizationActivity : AppCompatActivity() {
         val app = applicationContext as MyApplication
         if (app.isSessionExpired()) {
             app.clearSession()
-            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Sessione scaduta. Effettua nuovamente l'accesso.", Toast.LENGTH_SHORT).show()
             navigateToLogin()
             return
         } else {
             app.updateLastActiveTime()
         }
 
-        passwordManager = PasswordManager(applicationContext)
         sharedPreferences = getSharedPreferences("notes_prefs", Context.MODE_PRIVATE)
 
         val originalTitle = intent.getStringExtra("noteTitle") ?: ""
@@ -50,7 +45,7 @@ class VisualizationActivity : AppCompatActivity() {
             val app = applicationContext as MyApplication
             if (app.isSessionExpired()) {
                 app.clearSession()
-                Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Sessione scaduta. Effettua nuovamente l'accesso.", Toast.LENGTH_SHORT).show()
                 navigateToLogin()
             } else {
                 app.updateLastActiveTime()
@@ -62,15 +57,10 @@ class VisualizationActivity : AppCompatActivity() {
                 }
 
                 saveEncryptedNote(modifiedTitle, modifiedBody)
-                Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Nota salvata", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
-    }
-
-    private fun getSessionKey(): ByteArray? {
-        val app = applicationContext as MyApplication
-        return app.sessionKey
     }
 
     private fun navigateToLogin() {
@@ -81,18 +71,15 @@ class VisualizationActivity : AppCompatActivity() {
     }
 
     private fun encryptNoteContent(content: String): ByteArray? {
-        val key = getSessionKey() ?: run {
-            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
-            finish()
-            return null
-        }
         return try {
-            val secretKey = SecretKeySpec(key, "AES")
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-            val iv = cipher.iv
-            val ciphertext = cipher.doFinal(content.toByteArray())
-            iv + ciphertext
+            val cipher = encryptionManager.getEncryptCipher()
+            if (cipher != null) {
+                val iv = cipher.iv
+                val ciphertext = cipher.doFinal(content.toByteArray())
+                iv + ciphertext
+            } else {
+                null
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -108,7 +95,7 @@ class VisualizationActivity : AppCompatActivity() {
             noteTitles.add(title)
             sharedPreferences.edit().putStringSet(noteTitlesKey, noteTitles).apply()
         } else {
-            Toast.makeText(this, "Failed to encrypt note", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Impossibile criptare la nota", Toast.LENGTH_SHORT).show()
         }
     }
 

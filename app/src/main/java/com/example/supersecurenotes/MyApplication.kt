@@ -4,15 +4,14 @@ import android.app.Application
 
 class MyApplication : Application() {
 
-    var sessionKey: ByteArray? = null
     var lastActiveTime: Long = System.currentTimeMillis()
 
     companion object {
-        private const val SESSION_TIMEOUT_DURATION = 5 * 60 * 1000 // 5 minutes
+        private const val SESSION_TIMEOUT_DURATION = 5 * 60 * 1000 // 5 minuti
     }
 
     fun isSessionExpired(): Boolean {
-        return (System.currentTimeMillis() - lastActiveTime) > SESSION_TIMEOUT_DURATION || sessionKey == null
+        return (System.currentTimeMillis() - lastActiveTime) > SESSION_TIMEOUT_DURATION
     }
 
     fun updateLastActiveTime() {
@@ -20,7 +19,6 @@ class MyApplication : Application() {
     }
 
     fun clearSession() {
-        sessionKey = null
         lastActiveTime = 0L
     }
 }

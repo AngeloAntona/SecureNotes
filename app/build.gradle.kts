@@ -47,5 +47,6 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation ("androidx.security:security-crypto:1.1.0-alpha03")
     implementation ("org.mindrot:jbcrypt:0.4")
+    implementation ("androidx.biometric:biometric:1.2.0-alpha05")
 
 }
