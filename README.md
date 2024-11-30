@@ -3,22 +3,22 @@ The NoteApp is a secure notepad application designed to protect user notes with 
 
 # Functionalities
 
-Login Screen (MainActivity)
-* Authentication: Users must authenticate using their biometric credentials (e.g., fingerprint) to access the app’s features.
-* Biometric Prompt: Utilizes Android’s BiometricPrompt API to handle secure and user-friendly biometric authentication.
+**Login Screen (MainActivity)**
+* **Authentication**: Users must authenticate using their biometric credentials (e.g., fingerprint) to access the app’s features.
+* **Biometric Prompt**: Utilizes Android’s BiometricPrompt API to handle secure and user-friendly biometric authentication.
 
-Notes Screen (NotesActivity)
-* Viewing Notes: Displays a list of all saved notes. Each note is represented by its title.
-* Creating a New Note: Users can add a new note using the + button, which opens a screen to input the title and content.
-* Editing a Note: Tapping an existing note allows users to view and edit its content.
-* Deleting a Note: Long-pressing a note brings up a confirmation to delete it.
-* Manual Lock: Users can manually lock the app using the Lock button, requiring re-authentication to access notes again.
+**Notes Screen (NotesActivity)**
+* **Viewing Notes**: Displays a list of all saved notes. Each note is represented by its title.
+* **Creating a New Note**: Users can add a new note using the + button, which opens a screen to input the title and content.
+* **Editing a Note**: Tapping an existing note allows users to view and edit its content.
+* **Deleting a Note**: Long-pressing a note brings up a confirmation to delete it.
+* **Manual Lock**: Users can manually lock the app using the Lock button, requiring re-authentication to access notes again.
 
-Visualization Screen (VisualizationActivity)
-* Note Management: Allows users to create a new note or edit an existing one by entering the title and content.
-* Secure Saving: Notes are encrypted before being saved to ensure confidentiality and integrity.
+**Visualization Screen (VisualizationActivity)**
+* **Note Management**: Allows users to create a new note or edit an existing one by entering the title and content.
+* **Secure Saving**: Notes are encrypted before being saved to ensure confidentiality and integrity.
 
-#Security Functionalities
+# Security Functionalities
 
 ## Biometric Authentication
 * Secure Access: Utilizes Android’s BiometricPrompt to ensure that only authorized users can access the app.
