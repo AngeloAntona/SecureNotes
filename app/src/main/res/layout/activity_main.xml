@@ -6,9 +6,9 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="16dp"
-    android:background="?android:colorBackground"> <!-- Layout background using the color set in the theme -->
+    android:background="?android:colorBackground">
 
-    <!-- Password input field -->
+    <!-- Campo password -->
     <EditText
         android:id="@+id/passwordEditText"
         android:layout_width="match_parent"
@@ -17,9 +17,10 @@
         android:inputType="textPassword"
         android:textColor="?android:textColorPrimary"
         android:textColorHint="?android:textColorPrimary"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:visibility="gone" />
 
-    <!-- Login button -->
+    <!-- Bottone Login -->
     <Button
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
@@ -27,5 +28,18 @@
         android:text="Login"
         android:textColor="?android:colorBackground"
         android:background="@drawable/rounded_button"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:visibility="gone"/>
+
+    <!-- Bottone per usare password come fallback -->
+    <Button
+        android:id="@+id/usePasswordButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Use Password"
+        android:textColor="?android:colorBackground"
+        android:background="@drawable/rounded_button"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"/>
+
 </LinearLayout>

@@ -9,16 +9,23 @@ import android.text.TextWatcher
 import android.util.Base64
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import javax.crypto.Cipher
-import javax.crypto.spec.GCMParameterSpec
-import javax.crypto.spec.SecretKeySpec
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 
 class ModLockActivity : AppCompatActivity() {
 
     private lateinit var passwordManager: PasswordManager
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var oldPasswordEditText: EditText
+    private lateinit var newPasswordEditText: EditText
+    private lateinit var confirmPasswordEditText: EditText
+    private lateinit var passwordStrengthTextView: TextView
+    private lateinit var saveButton: Button
+    private lateinit var enableBiometricButton: Button
+    private lateinit var biometricStatusTextView: TextView
+
     private val noteTitlesKey = "noteTitlesKey"
-    private val GCM_TAG_LENGTH = 128
+    private var masterKeyToEncrypt: ByteArray? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +34,7 @@ class ModLockActivity : AppCompatActivity() {
         val app = applicationContext as MyApplication
         if (app.isSessionExpired()) {
             app.clearSession()
-            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Session expired", Toast.LENGTH_SHORT).show()
             navigateToLogin()
             return
         } else {
@@ -37,22 +44,25 @@ class ModLockActivity : AppCompatActivity() {
         passwordManager = PasswordManager(applicationContext)
         sharedPreferences = getSharedPreferences("notes_prefs", Context.MODE_PRIVATE)
 
-        val oldPasswordEditText = findViewById<EditText>(R.id.previousPasswordEditText)
-        val newPasswordEditText = findViewById<EditText>(R.id.newPasswordEditText)
-        val passwordStrengthTextView = findViewById<TextView>(R.id.passwordStrengthTextView)
-        val confirmPasswordEditText = findViewById<EditText>(R.id.repeatNewPasswordEditText)
-        val saveButton = findViewById<Button>(R.id.savePasswordButton)
+        oldPasswordEditText = findViewById(R.id.previousPasswordEditText)
+        newPasswordEditText = findViewById(R.id.newPasswordEditText)
+        confirmPasswordEditText = findViewById(R.id.repeatNewPasswordEditText)
+        passwordStrengthTextView = findViewById(R.id.passwordStrengthTextView)
+        saveButton = findViewById(R.id.savePasswordButton)
+        enableBiometricButton = findViewById(R.id.enableBiometricButton)
+        biometricStatusTextView = findViewById(R.id.biometricStatusTextView)
 
-        // Monitoring the strength of the new password during typing
+        updateBiometricButtonText()
+        updateBiometricStatusText()
+
         newPasswordEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val password = s.toString()
                 val (isComplex, message) = checkPasswordComplexity(password)
                 passwordStrengthTextView.text = if (isComplex) "Strong Password" else message
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int){}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int){}
         })
 
         saveButton.setOnClickListener {
@@ -60,25 +70,46 @@ class ModLockActivity : AppCompatActivity() {
             val newPassword = newPasswordEditText.text.toString()
             val confirmPassword = confirmPasswordEditText.text.toString()
 
-            if (passwordManager.isPasswordCorrect(oldPassword)) {
-                if (newPassword == confirmPassword) {
-                    val (isComplex, message) = checkPasswordComplexity(newPassword)
-                    if (isComplex) {
-                        // Attempting to re-encrypt notes with the new password
-                        if (reEncryptNotesWithNewPassword(newPassword, oldPassword)) {
-                            Toast.makeText(this, "Password updated successfully", Toast.LENGTH_SHORT).show()
-                            finish()
-                        } else {
-                            Toast.makeText(this, "Error during note re-encryption", Toast.LENGTH_LONG).show()
-                        }
+            if (!isCurrentPasswordValid(oldPassword)) return@setOnClickListener
+
+            if (newPassword == confirmPassword) {
+                val (isComplex, message) = checkPasswordComplexity(newPassword)
+                if (isComplex) {
+                    if (reEncryptMasterKeyWithNewPassword(newPassword, oldPassword)) {
+                        Toast.makeText(this, "Password updated", Toast.LENGTH_SHORT).show()
+                        finish()
                     } else {
-                        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Error", Toast.LENGTH_LONG).show()
                     }
                 } else {
-                    Toast.makeText(this, "The new passwords do not match", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                 }
             } else {
-                Toast.makeText(this, "The current password is incorrect", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        enableBiometricButton.setOnClickListener {
+            val oldPass = oldPasswordEditText.text.toString()
+            if (!isCurrentPasswordValid(oldPass)) return@setOnClickListener
+
+            if (passwordManager.isBiometricEnabled()) {
+                disableBiometric()
+            } else {
+                val derivedKey = passwordManager.deriveSessionKeyWithoutStoring(oldPass)
+                val encryptedMasterKeyWithPassword = passwordManager.getEncryptedMasterKeyPassword()
+
+                if (derivedKey != null && encryptedMasterKeyWithPassword != null) {
+                    val mk = EncryptionUtils.decryptAesGcm(encryptedMasterKeyWithPassword, derivedKey)
+                    if (mk != null) {
+                        masterKeyToEncrypt = mk
+                        showBiometricPromptForEncryption()
+                    } else {
+                        Toast.makeText(this, "Cannot decrypt master key", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this, "Cannot access master key", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -90,123 +121,126 @@ class ModLockActivity : AppCompatActivity() {
         finish()
     }
 
-    // Function to check password complexity
+    private fun isCurrentPasswordValid(oldPassword: String): Boolean {
+        if (!passwordManager.isPasswordCorrect(oldPassword)) {
+            Toast.makeText(this, "Current password incorrect", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
+    }
+
+    private fun updateBiometricButtonText() {
+        enableBiometricButton.text = if (passwordManager.isBiometricEnabled()) {
+            "Disable Biometric"
+        } else {
+            "Enable Biometric"
+        }
+    }
+
+    private fun updateBiometricStatusText() {
+        biometricStatusTextView.text = if (passwordManager.isBiometricEnabled()) {
+            "Status: Enabled"
+        } else {
+            "Status: Disabled"
+        }
+    }
+
     private fun checkPasswordComplexity(password: String): Pair<Boolean, String> {
         val minLength = 8
         val missingRequirements = mutableListOf<String>()
 
-        if (password.length < minLength) {
-            missingRequirements.add("at least $minLength characters")
-        }
-        if (!password.any { it.isUpperCase() }) {
-            missingRequirements.add("an uppercase letter")
-        }
-        if (!password.any { it.isLowerCase() }) {
-            missingRequirements.add("a lowercase letter")
-        }
-        if (!password.any { it.isDigit() }) {
-            missingRequirements.add("a number")
-        }
-        if (!password.any { !it.isLetterOrDigit() }) {
-            missingRequirements.add("a special character")
-        }
+        if (password.length < minLength) missingRequirements.add("$minLength chars")
+        if (!password.any { it.isUpperCase() }) missingRequirements.add("uppercase")
+        if (!password.any { it.isLowerCase() }) missingRequirements.add("lowercase")
+        if (!password.any { it.isDigit() }) missingRequirements.add("number")
+        if (!password.any { !it.isLetterOrDigit() }) missingRequirements.add("special char")
 
         return if (missingRequirements.isEmpty()) {
-            Pair(true, "The password meets all requirements.")
+            Pair(true, "")
         } else {
-            val message = "The password must contain " + missingRequirements.joinToString(", ") + "."
+            val message = "Must contain: " + missingRequirements.joinToString(", ")
             Pair(false, message)
         }
     }
 
-    private fun getSessionKey(): ByteArray? {
-        return passwordManager.getSessionKey()
-    }
+    private fun reEncryptMasterKeyWithNewPassword(newPassword: String, oldPassword: String): Boolean {
+        val encryptedMasterKey = passwordManager.getEncryptedMasterKeyPassword() ?: return false
 
-    // Function to re-encrypt notes with the new password
-    private fun reEncryptNotesWithNewPassword(newPassword: String, oldPassword: String): Boolean {
-        val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf()) ?: return false
+        val oldDerivedKey = passwordManager.deriveSessionKeyWithoutStoring(oldPassword) ?: return false
+        val masterKey = EncryptionUtils.decryptAesGcm(encryptedMasterKey, oldDerivedKey) ?: return false
 
-        // Retrieve the old session key
-        val oldSessionKey = getSessionKey()
-        if (oldSessionKey == null) {
-            return false
-        }
-
-        // Temporarily save the old password hash and old PBKDF2 salt
-        val oldPasswordHash = passwordManager.getPasswordHash()
-        val oldPbkdf2Salt = passwordManager.getPbkdf2Salt()
-
-        // Set the new password, which updates the hash and generates a new PBKDF2 salt
         passwordManager.setPassword(newPassword)
+        val newDerivedKey = passwordManager.deriveSessionKeyWithoutStoring(newPassword) ?: return false
+        val newEncryptedMasterKey = EncryptionUtils.encryptAesGcm(masterKey, newDerivedKey) ?: return false
 
-        // Derive the new session key based on the new password and new PBKDF2 salt
-        val newSessionKey = passwordManager.deriveSessionKeyWithoutStoring(newPassword)
-        if (newSessionKey == null) {
-            // In case of error, restore the old password and salt
-            passwordManager.restoreOldPassword(oldPasswordHash, oldPbkdf2Salt)
-            return false
-        }
-
-        // Process each note individually
-        for (title in noteTitles) {
-            val encodedContent = sharedPreferences.getString(title, null)
-            if (encodedContent != null) {
-                // Decrypt with the old session key
-                val content = decryptNoteContent(encodedContent, oldSessionKey)
-                if (content != null) {
-                    // Encrypt with the new session key
-                    val encryptedContent = encryptNoteContent(content, newSessionKey)
-                    if (encryptedContent != null) {
-                        val encodedNewContent = Base64.encodeToString(encryptedContent, Base64.DEFAULT)
-                        sharedPreferences.edit().putString(title, encodedNewContent).apply()
-                    } else {
-                        // In case of encryption error, restore the old password and salt
-                        passwordManager.restoreOldPassword(oldPasswordHash, oldPbkdf2Salt)
-                        return false
-                    }
-                } else {
-                    // In case of decryption error, restore the old password and salt
-                    passwordManager.restoreOldPassword(oldPasswordHash, oldPbkdf2Salt)
-                    return false
-                }
-            }
-        }
-
-        // Set the new session key in the application's session
-        passwordManager.setSessionKey(newSessionKey)
+        val sharedPrefs = passwordManager.javaClass.getDeclaredField("sharedPreferences")
+        sharedPrefs.isAccessible = true
+        val sp = sharedPrefs.get(passwordManager) as SharedPreferences
+        sp.edit().putString("encrypted_master_key_password", Base64.encodeToString(newEncryptedMasterKey, Base64.DEFAULT)).apply()
 
         return true
     }
 
-    private fun encryptNoteContent(content: String, key: ByteArray?): ByteArray? {
-        if (key == null) return null
-        return try {
-            val secretKey = SecretKeySpec(key, "AES")
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-            val iv = cipher.iv
-            val ciphertext = cipher.doFinal(content.toByteArray())
-            iv + ciphertext
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+    private fun disableBiometric() {
+        val sharedPrefs = passwordManager.javaClass.getDeclaredField("sharedPreferences")
+        sharedPrefs.isAccessible = true
+        val sp = sharedPrefs.get(passwordManager) as SharedPreferences
+        sp.edit().remove("encrypted_master_key_biometric").apply()
+
+        passwordManager.setBiometricEnabled(false)
+        Toast.makeText(this, "Biometric disabled", Toast.LENGTH_SHORT).show()
+        updateBiometricButtonText()
+        updateBiometricStatusText()
     }
 
-    private fun decryptNoteContent(encodedData: String, key: ByteArray?): String? {
-        if (key == null) return null
-        val encryptedData = Base64.decode(encodedData, Base64.DEFAULT)
-        return try {
-            val secretKey = SecretKeySpec(key, "AES")
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            val iv = encryptedData.sliceArray(0 until 12)
-            val encryptedText = encryptedData.sliceArray(12 until encryptedData.size)
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(GCM_TAG_LENGTH, iv))
-            String(cipher.doFinal(encryptedText))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+    private fun showBiometricPromptForEncryption() {
+        val executor = ContextCompat.getMainExecutor(this)
+        val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                Toast.makeText(applicationContext, "Biometric error: $errString", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                val cipher = result.cryptoObject?.cipher
+                val mk = masterKeyToEncrypt
+                if (cipher != null && mk != null) {
+                    try {
+                        val iv = cipher.iv
+                        val ciphertext = cipher.doFinal(mk)
+                        val finalData = iv + ciphertext
+                        passwordManager.storeBiometricEncryptedMasterKey(finalData)
+                        passwordManager.setBiometricEnabled(true)
+                        Toast.makeText(this@ModLockActivity, "Biometric enabled", Toast.LENGTH_SHORT).show()
+                        updateBiometricButtonText()
+                        updateBiometricStatusText()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Toast.makeText(this@ModLockActivity, "Error enabling biometric", Toast.LENGTH_SHORT).show()
+                    } finally {
+                        masterKeyToEncrypt = null
+                    }
+                } else {
+                    Toast.makeText(this@ModLockActivity, "Cipher or key not available", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onAuthenticationFailed() {
+                Toast.makeText(applicationContext, "Biometric failed", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Biometric Authentication")
+            .setSubtitle("Authenticate to enable")
+            .setNegativeButtonText("Cancel")
+            .build()
+
+        val encryptionManager = EncryptionManager()
+        val encryptCipher = encryptionManager.getEncryptCipher()
+        if (encryptCipher != null) {
+            biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(encryptCipher))
+        } else {
+            Toast.makeText(this, "No cipher", Toast.LENGTH_SHORT).show()
         }
     }
 }

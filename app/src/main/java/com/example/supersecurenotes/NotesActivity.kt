@@ -138,11 +138,7 @@ class NotesActivity : AppCompatActivity() {
     }
 
     private fun encryptNoteContent(content: String): ByteArray? {
-        val key = getSessionKey() ?: run {
-            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
-            finish()
-            return null
-        }
+        val key = getSessionKey() ?: return null
         return try {
             val secretKey = SecretKeySpec(key, "AES")
             val cipher = Cipher.getInstance("AES/GCM/NoPadding")
@@ -158,11 +154,7 @@ class NotesActivity : AppCompatActivity() {
 
     private fun decryptNoteContent(encodedData: String): String? {
         val encryptedData = Base64.decode(encodedData, Base64.DEFAULT)
-        val key = getSessionKey() ?: run {
-            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
-            finish()
-            return null
-        }
+        val key = getSessionKey() ?: return null
         return try {
             val secretKey = SecretKeySpec(key, "AES")
             val cipher = Cipher.getInstance("AES/GCM/NoPadding")

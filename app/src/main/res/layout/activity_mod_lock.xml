@@ -1,77 +1,165 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center"
-    android:background="?android:colorBackground">
+    android:background="?android:colorBackground"
+    android:padding="24dp">
 
-    <!-- Titolo -->
+    <!-- Titolo della schermata -->
     <TextView
-        android:id="@+id/titleTextView"
+        android:id="@+id/screenTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Change Password"
-        android:textSize="24sp"
+        android:text="SETTINGS"
         android:textStyle="bold"
-        android:layout_gravity="center"
-        android:paddingBottom="16dp" />
+        android:textSize="25sp"
+        android:textColor="?android:textColorPrimary"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="40dp" />
 
-    <!-- Campo per la password precedente -->
+    <!-- Sezione top: inserimento vecchia password -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Password"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="?android:textColorPrimary"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="8dp" />
+
     <EditText
         android:id="@+id/previousPasswordEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Previous password"
+        android:hint="Current password"
         android:inputType="textPassword"
         android:padding="12dp"
-        android:layout_marginBottom="16dp"
         android:textColor="?android:textColorPrimary"
-        android:textColorHint="?android:textColorPrimary" />
+        android:textColorHint="?android:textColorPrimary"
+        android:layout_marginBottom="24dp" />
 
-    <!-- Campo per la nuova password -->
-    <EditText
-        android:id="@+id/newPasswordEditText"
+    <!-- Sezione bottom: due colonne affiancate con linea meno visibile -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="New password"
-        android:inputType="textPassword"
-        android:padding="12dp"
-        android:layout_marginBottom="8dp"
-        android:textColor="?android:textColorPrimary"
-        android:textColorHint="?android:textColorPrimary" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
-    <!-- Feedback sulla forza della nuova password -->
-    <TextView
-        android:id="@+id/passwordStrengthTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Password must be at least 8 characters."
-        android:textColor="?android:textColorPrimary"
-        android:padding="8dp"
-        android:layout_marginBottom="16dp" />
+        <!-- Sezione sinistra: cambio password -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    <!-- Campo per confermare la nuova password -->
-    <EditText
-        android:id="@+id/repeatNewPasswordEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Repeat new password"
-        android:inputType="textPassword"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp"
-        android:textColor="?android:textColorPrimary"
-        android:textColorHint="?android:textColorPrimary" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Password"
+                android:layout_gravity="center_horizontal"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="?android:textColorPrimary"
+                android:layout_marginBottom="8dp" />
 
-    <!-- Bottone per salvare la nuova password -->
-    <Button
-        android:id="@+id/savePasswordButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Save"
-        android:textColor="?android:colorBackground"
-        android:background="@drawable/rounded_button"
-        android:padding="12dp" />
+            <EditText
+                android:id="@+id/newPasswordEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="New password"
+                android:inputType="textPassword"
+                android:layout_gravity="center_horizontal"
+                android:padding="12dp"
+                android:textColor="?android:textColorPrimary"
+                android:textColorHint="?android:textColorPrimary"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/passwordStrengthTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="12sp"
+                android:text="Password must be at least 8 characters."
+                android:textColor="?android:textColorPrimary"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/repeatNewPasswordEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Repeat new password"
+                android:layout_gravity="center_horizontal"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:textColor="?android:textColorPrimary"
+                android:textColorHint="?android:textColorPrimary"
+                android:layout_marginBottom="16dp" />
+
+            <Button
+                android:id="@+id/savePasswordButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/rounded_button"
+                android:padding="12dp"
+                android:text="Change Password"
+                android:textColor="?android:colorBackground" />
+        </LinearLayout>
+
+        <!-- Linea verticale meno visibile (1dp e dividerHorizontal) -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp"
+            android:background="?android:dividerHorizontal" />
+
+        <!-- Sezione destra: modifica stato biometria -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Biometric Auth"
+                android:layout_gravity="center_horizontal"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="?android:textColorPrimary"
+                android:layout_marginBottom="8dp" />
+
+            <!-- View "spacer" per allineare il bottone a quello a sinistra -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="8dp" />
+
+            <Button
+                android:id="@+id/enableBiometricButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_button"
+                android:padding="12dp"
+                android:layout_gravity="center_horizontal"
+                android:textColor="?android:colorBackground"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/biometricStatusTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Status: Unknown"
+                android:textColor="?android:textColorPrimary" />
+        </LinearLayout>
+
+    </LinearLayout>
 </LinearLayout>

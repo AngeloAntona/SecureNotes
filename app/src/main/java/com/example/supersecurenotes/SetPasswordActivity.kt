@@ -58,7 +58,6 @@ class SetPasswordActivity : AppCompatActivity() {
         }
     }
 
-    // Funzione per verificare la complessità della password
     private fun checkPasswordComplexity(password: String): Pair<Boolean, String> {
         val minLength = 8
         val missingRequirements = mutableListOf<String>()
