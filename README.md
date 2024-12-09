@@ -39,8 +39,70 @@ L’applicazione NoteApp è progettata per proteggere i dati sensibili (le note)
 * Timeout della Sessione: L’app richiede la ri-autenticazione dopo un periodo di inattività (es. 5 minuti). Questo impedisce ad un malintenzionato di accedere alle note se il dispositivo è sbloccato ma lasciato incustodito per troppo tempo.
 * Cancellazione della sessionKey in RAM: Quando la sessione scade o l’utente esce, la Master Key viene rimossa dalla memoria. Questo previene il rischio di recuperare la Master Key dalla RAM.
 
-Sicurezza del Codice
+## Sicurezza del Codice
 
 * Librerie Affidabili: Vengono usate librerie consolidate (BCrypt per l’hashing della password, PBKDF2 per la derivazione della chiave, AES/GCM per la cifratura) fornite dalla piattaforma Android e da pacchetti affidabili.
 * Nessun Log di Dati Sensibili: L’app evita di loggare password, chiavi o plaintext delle note.
 * Error Handling Sicuro: I messaggi di errore non rivelano dettagli sull’algoritmo di cifratura o sulla password, mostrando solo informazioni minime e user-friendly.
+
+___
+
+# Descrizione dei flussi di accesso con Password / Autenticazione biometrica
+
+Di seguito un quadro chiaro e completo del rapporto tra autenticazione biometrica, autenticazione con password e la Master Key, evidenziando i flussi di sicurezza e i passaggi crittografici coinvolti:
+
+## Concetti di Base
+* Master Key: È la chiave AES principale, generata casualmente la prima volta che si imposta una password. Non viene mai salvata in chiaro su disco. Tutte le note sono cifrate con questa Master Key.
+* Autenticazione con Password: L’utente inserisce una password complessa. Dalla password si deriva una chiave per decifrare la Master Key.
+* Autenticazione Biometrica: Opzionale. L’utente può attivare l’autenticazione biometrica (impronta digitale o altro metodo supportato) per accedere senza digitare la password. La Master Key può essere cifrata anche con una chiave custodita nel Keystore hardware-backed di Android, sbloccabile con la biometria.
+
+## Flusso di Sicurezza con Password
+1.	Input dell’Utente: L’utente inserisce la password.
+2.	Verifica Password:
+* La password dell’utente, dopo essere stata inserita, non viene mai salvata in chiaro.
+* L’app controlla l’hash della password salvato (ottenuto precedentemente con bcrypt). Se la password è corretta, si passa allo step successivo. Altrimenti, si incrementa il conteggio dei tentativi falliti.
+3.	Derivazione della Chiave (PBKDF2):
+* Viene usato PBKDF2 con il salt memorizzato e un elevato numero di iterazioni per derivare una chiave simmetrica (Password-Derived Key) a partire dalla password.
+* Questo processo trasforma la password in una chiave robusta, resistente a brute force.
+4.	Decrittazione della Master Key:
+* La Master Key è salvata nel dispositivo soltanto in forma cifrata con la Password-Derived Key.
+* Ora che abbiamo la Password-Derived Key, possiamo usarla per decifrare la Master Key cifrata. Viene usato AES/GCM: il risultato è la Master Key in chiaro, presente soltanto in RAM.
+5.	Accesso alle Note:
+* Con la Master Key in chiaro, l’app può decifrare ogni nota.
+* La Master Key resta in memoria finché dura la sessione. Se l’utente chiude l’app o la sessione scade, la Master Key è rimossa dalla RAM.
+
+### Riassunto del flusso con password:
+Utente -> Inserisce password -> (Check hash) -> OK -> PBKDF2 -> Ottiene Password-Derived Key -> Decripta Master Key -> Master Key in RAM -> Decripta note.
+
+## Flusso di Sicurezza con Biometria
+
+La biometria è un metodo alternativo che l’utente può attivare dopo aver impostato una password. Funziona così:
+	1.	Attivazione Biometria (una tantum):
+	•	L’utente inserisce la password (flusso password visto sopra).
+	•	Con la Master Key in chiaro, l’app usa il Keystore hardware-backed di Android per cifrare la Master Key con una chiave AES/GCM generata all’interno del Keystore. Questa chiave richiede autenticazione biometrica per essere usata.
+	•	Ora abbiamo due versioni cifrate della Master Key: una con la Password-Derived Key e una con la chiave biometrica dal Keystore.
+	2.	Accesso con Impronta (o altra Biometria):
+	•	L’utente avvia l’app e sceglie l’autenticazione biometrica.
+	•	L’app mostra il prompt biometrico. Al successo, Android fornisce un Cipher pronto per decrittare la Master Key cifrata con la chiave del Keystore.
+	•	Non serve inserire la password, perché la Master Key si ottiene direttamente decifrando la versione cifrata con la chiave biometrica hardware-backed. Questo avviene completamente all’interno dell’enclave sicura del dispositivo (Trusted Execution Environment).
+	3.	Decrittazione della Master Key tramite Biometria:
+	•	Il Cipher sbloccato dalla biometria decripta la Master Key cifrata con chiave biometrica.
+	•	La Master Key in chiaro è ora in RAM, esattamente come avviene con la password.
+	4.	Accesso alle Note:
+	•	Con la Master Key in chiaro, l’app può decifrare ogni nota, senza che l’utente abbia digitato la password.
+
+### Riassunto del flusso biometrico:
+Utente -> Autenticazione biometrica (impronta) -> Keystore sblocca chiave AES/GCM -> Decripta Master Key cifrata biometrica -> Master Key in RAM -> Decripta note.
+
+## Confronto e Riepilogo
+
+* Con Password: L’utente fornisce una password. Con PBKDF2 si ottiene una chiave per decrittare la Master Key.
+* Con Biometria: L’utente appoggia il dito sul sensore. Il device, tramite il Keystore e il TEE, fornisce direttamente un Cipher per decrittare la Master Key, senza inserire la password.
+
+In entrambi i casi, il risultato finale è lo stesso:
+La Master Key viene caricata in RAM, e con essa l’app può decifrare o cifrare le note. Tuttavia, con la biometria non si digita la password, perché la Master Key è già cifrata in modo da poter essere decrittata dal Keystore con l’autenticazione biometrica.
+
+## Sicurezza del Keystore e del Flusso Biometrico
+
+* La chiave biometrica del Keystore non è mai accessibile in chiaro dallo spazio utente. Senza la biometria dell’utente, la Master Key non può essere sbloccata.
+* Anche con privilegi root, un attaccante non può estrarre la chiave hardware dal TEE né ingannare il prompt biometrico.
