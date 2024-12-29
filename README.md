@@ -1,178 +1,97 @@
-# NoteApp Implementation and Functionalities
+The NoteApp application is designed to protect sensitive data (notes) and the Master Key used to encrypt them through a combination of user passwords, secure key derivation, optional biometrics, and robust encryption. Its goal is to prevent unauthorized access, even if the device is compromised, ensuring the confidentiality and integrity of the notes.
 
-## Overview
+# Authentication Mechanisms
 
-The **NoteApp** is a secure notepad application designed to protect user notes with robust security features. The app requires authentication to access notes and provides functionality for creating, viewing, editing, and deleting notes.
+![Login](ReadmeFiles/FinalPasswordManagement.jpg)
 
-## Functionalities
+## Password
 
-### First-Time Setup
+- **Password Setup on First Use:** Users must create a password without defaults, preventing unauthorized access.
+- **Password Hashing with bcrypt:** The password is never stored in plain text. An hash is generated using bcrypt with sufficient cost (BCRYPT_COST) to make brute-force attacks expensive.
+- **Complexity Requirements:** Passwords must meet robustness criteria (min. 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character) to reduce the risk of weak passwords.
+- **No Default Passwords:** Eliminates common initial vulnerabilities.
 
-- **Password Initialization**: On the first launch, the app prompts the user to set up a new password. There is no default password, enhancing security by ensuring only the user knows their password.
+## Biometrics (Optional)
 
-![First login](ReadmeFiles/FirstAccessScreen.jpg)
+- **Hardware-Backed Keystore:** The app can store an encrypted version of the Master Key using Android’s Keystore backed by the Trusted Execution Environment (TEE). Access to the key requires biometric authentication (fingerprint, face recognition, or other supported methods).
+- **UserAuthenticationRequired:** The biometric key is generated with parameters requiring user authentication for every use, preventing unauthorized use even with root privileges.
 
+# Note Encryption
 
-### Login Screen (*MainActivity*)
+![Login](ReadmeFiles/FinalAppInterface.jpg)
 
-- **Authentication**: Users must enter their password to access the app's features.
-- **Access Attempt Limitation**: The app limits failed login attempts. After a certain number of incorrect entries (e.g., 5 attempts), the account is temporarily locked.
+## Master Key and Derivation
 
-### Notes Screen (*NotesActivity*)
+- **Generated and Encrypted Master Key:** During password setup, the app generates a 32-byte Master Key. It is never stored in plain text but encrypted using a key derived from the user's password.
+- **PBKDF2 Key Derivation:** The app uses PBKDF2 (with SHA-256, 100,000 iterations, and a securely stored unique salt) to derive a symmetric Password-Derived Key.
+- **AES-GCM Encryption of Master Key:** The Master Key is encrypted with AES-GCM using the Password-Derived Key. To change the password, the Master Key can be re-encrypted with a new Password-Derived Key.
 
-- **Viewing Notes**: Displays a list of all saved notes. Each note is represented by its title.
-- **Creating a New Note**: Users can add a new note using the **+** button, which opens a screen to input the title and content.
-- **Editing a Note**: Tapping an existing note allows users to view and edit its content.
-- **Deleting a Note**: Long-pressing a note brings up a confirmation to delete it.
-- **Changing Password**: Users can change their password via the **M** button, leading to the *ChangePasswordActivity*.
+## Note Encryption
 
-![Notes Screen](ReadmeFiles/NotesScreen.jpg)
+- **AES-256 GCM Mode:** Notes are encrypted with AES/GCM 256-bit using the Master Key. AES ensures robust encryption, while GCM provides message authentication.
+- **Unique IVs:** Each encryption operation generates a random Initialization Vector (IV) to prevent key reuse.
+- **Encrypted Storage:** Encrypted notes (IV + ciphertext) are stored on disk. Without the correct Master Key, decryption is impossible.
 
+# Access Management and Additional Security
 
-### Change Password Screen (*ChangePasswordActivity*)
+## Attempt Limit and Temporary Lockout
 
-- **Password Update**: Users can update their password by entering the current password and a new password that meets complexity requirements.
+- **Account Lockout:** After multiple failed password attempts (e.g., 5 tries), the account locks temporarily (e.g., 1 minute) to deter brute-force attacks.
 
-![Change Password](ReadmeFiles/ChangePasswordScreen.jpg)
+## Session Expiration
 
+- **Session Timeout:** Re-authentication is required after inactivity (e.g., 5 minutes) to prevent unauthorized access if the device is unattended.
+- **Session Key Clearing:** On session expiration or logout, the Master Key is removed from memory.
 
-## Security Functionalities
+## Code Security
 
-### Password Security
+- **Reliable Libraries:** Uses established libraries (BCrypt, PBKDF2, AES/GCM) from Android and trusted sources.
+- **No Sensitive Data Logs:** Passwords, keys, or plaintext notes are never logged.
+- **Safe Error Handling:** Error messages reveal minimal user-friendly information without exposing sensitive details.
 
-- **Secure Password Storage**: Passwords are hashed using bcrypt with a configurable cost factor, preventing storage of plaintext passwords and resisting brute-force attacks.
+# Authentication Flows: Password and Biometrics
 
-    ```kotlin
-    import org.mindrot.jbcrypt.BCrypt
+## Core Concepts
 
-    fun setPassword(newPassword: String) {
-        val passwordHash = BCrypt.hashpw(newPassword, BCrypt.gensalt(BCRYPT_COST))
-        sharedPreferences.edit().putString(PASSWORD_HASH_KEY, passwordHash).apply()
-    }
+- **Master Key:** A securely generated AES key never stored in plain text; it encrypts all notes.
+- **Password Authentication:** The user provides a password to derive a key for decrypting the Master Key.
+- **Biometric Authentication (Optional):** Allows accessing the Master Key without entering a password by using a hardware-backed key in the Android Keystore.
 
-    fun isPasswordCorrect(enteredPassword: String): Boolean {
-        val storedHash = sharedPreferences.getString(PASSWORD_HASH_KEY, null)
-        return if (storedHash != null) {
-            BCrypt.checkpw(enteredPassword, storedHash)
-        } else {
-            false
-        }
-    }
-    ```
+## Password-Based Security Flow
 
-- **Password Complexity Requirements**: The app enforces complexity rules, requiring passwords to be at least 8 characters and include uppercase letters, lowercase letters, numbers, and special characters.
+1. **Input:** User enters password.
+2. **Verification:**
+   - The app checks the bcrypt hash of the entered password.
+   - On success, it proceeds; otherwise, failed attempts are incremented.
+3. **Key Derivation (PBKDF2):**
+   - Uses the password and a stored salt to derive a robust symmetric key.
+4. **Decrypt Master Key:**
+   - Decrypts the Master Key stored in encrypted form using AES/GCM and the Password-Derived Key.
+5. **Note Access:**
+   - With the decrypted Master Key, notes can be accessed.
+   - The Master Key remains in memory during the session and is cleared when the session ends.
 
-    ```kotlin
-    fun checkPasswordComplexity(password: String): Pair<Boolean, String> {
-        val complexityRegex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&+=]).{8,}\$")
-        val isValid = complexityRegex.matches(password)
-        val message = if (isValid) "Password is valid." else "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
-        return Pair(isValid, message)
-    }
-    ```
+## Biometric-Based Security Flow
 
-- **No Default Password**: Eliminated the use of a default password to prevent unauthorized access through default credentials.
+1. **Setup (One-Time):**
+   - User enters a password and decrypts the Master Key.
+   - The Master Key is encrypted using a hardware-backed key requiring biometrics.
+2. **Access with Biometrics:**
+   - The user authenticates biometrically.
+   - Android provides a Cipher to decrypt the Master Key encrypted with the biometric key.
+3. **Decrypt Master Key:**
+   - The Master Key is decrypted and loaded into RAM.
+4. **Note Access:**
+   - Notes are decrypted using the Master Key.
 
-### Note Encryption
+# Summary
 
-- **Encryption Key Derived from Password**: Notes are encrypted using a key derived from the user's password via PBKDF2, ensuring notes can't be decrypted without the correct password.
+| Method      | Input         | Key Derivation       | Master Key Decryption |
+|-------------|---------------|----------------------|------------------------|
+| Password    | Password      | PBKDF2 + bcrypt      | AES/GCM with Password-Derived Key |
+| Biometrics  | Biometric Data| Keystore Cipher      | AES/GCM with Hardware-Backed Key |
 
-    ```kotlin
-    fun deriveSessionKey(password: String) {
-        val pbkdf2SaltString = sharedPreferences.getString(PBKDF2_SALT_KEY, null)
-        val pbkdf2Salt = Base64.decode(pbkdf2SaltString, Base64.DEFAULT)
-        val spec = PBEKeySpec(password.toCharArray(), pbkdf2Salt, PBKDF2_ITERATIONS, KEY_LENGTH)
-        val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-        val key = factory.generateSecret(spec).encoded
+## Keystore and Biometric Security
 
-        val app = context.applicationContext as MyApplication
-        app.sessionKey = key
-    }
-    ```
-
-- **Secure Note Storage**: Notes are encrypted with AES-256 in GCM mode, providing both confidentiality and integrity.
-
-    ```kotlin
-    fun encryptNoteContent(content: String): String {
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        val iv = ByteArray(12).apply { SecureRandom().nextBytes(this) }
-        val spec = GCMParameterSpec(128, iv)
-        cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(app.sessionKey, "AES"), spec)
-        val encrypted = cipher.doFinal(content.toByteArray(Charsets.UTF_8))
-        return Base64.encodeToString(iv + encrypted, Base64.DEFAULT)
-    }
-
-    fun decryptNoteContent(encryptedContent: String): String {
-        val decoded = Base64.decode(encryptedContent, Base64.DEFAULT)
-        val iv = decoded.copyOfRange(0, 12)
-        val encrypted = decoded.copyOfRange(12, decoded.size)
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        val spec = GCMParameterSpec(128, iv)
-        cipher.init(Cipher.DECRYPT_MODE, SecretKeySpec(app.sessionKey, "AES"), spec)
-        val decrypted = cipher.doFinal(encrypted)
-        return String(decrypted, Charsets.UTF_8)
-    }
-    ```
-
-### Access Control
-
-- **Limited Login Attempts**: Implements a lockout policy after multiple failed login attempts.
-
-    ```kotlin
-    private val MAX_ATTEMPTS = 5
-    private val LOCKOUT_DURATION = 1 * 60 * 1000 // 1 minute
-
-    fun recordFailedAttempt() {
-        var failedAttempts = sharedPreferences.getInt(ATTEMPT_COUNT_KEY, 0) + 1
-        sharedPreferences.edit().putInt(ATTEMPT_COUNT_KEY, failedAttempts).apply()
-        if (failedAttempts >= MAX_ATTEMPTS) {
-            sharedPreferences.edit().putLong(LOCKOUT_TIME_KEY, System.currentTimeMillis()).apply()
-        }
-    }
-
-    fun isLockedOut(): Boolean {
-        val failedAttempts = sharedPreferences.getInt(ATTEMPT_COUNT_KEY, 0)
-        val lockoutTime = sharedPreferences.getLong(LOCKOUT_TIME_KEY, 0)
-        val currentTime = System.currentTimeMillis()
-        return failedAttempts >= MAX_ATTEMPTS && (currentTime - lockoutTime) < LOCKOUT_DURATION
-    }
-    ```
-
-- **Session Management**: Requires re-authentication after a period of inactivity.
-
-    ```kotlin
-    class MyApplication : Application() {
-        var sessionKey: ByteArray? = null
-        var lastActiveTime: Long = System.currentTimeMillis()
-
-        companion object {
-            private const val SESSION_TIMEOUT_DURATION = 5 * 60 * 1000 // 5 minutes
-        }
-
-        fun isSessionExpired(): Boolean {
-            return (System.currentTimeMillis() - lastActiveTime) > SESSION_TIMEOUT_DURATION
-        }
-
-        fun updateLastActiveTime() {
-            lastActiveTime = System.currentTimeMillis()
-        }
-
-        fun clearSession() {
-            sessionKey = null
-            lastActiveTime = 0L
-        }
-    }
-    ```
-
-- **Mandatory Authentication for Password Change**: Users must enter their current password to change it, preventing unauthorized password changes.
-
-### Secure Coding Practices
-
-- **Use of Reliable Libraries**: Utilizes established cryptographic libraries like `BCrypt` and `javax.crypto`.
-- **Input Protection**: Masks password inputs and securely handles sensitive data.
-- **No Sensitive Data in Logs**: Avoids logging passwords or encryption keys.
-- **Error Handling**: Provides user-friendly error messages without revealing sensitive information.
-
-## Class Diagram
-![New Class Scheme](ReadmeFiles/CompleteClassDIagram.png)
-(The pdf of the Class Diagram is available [here](ReadmeFiles/CompleteClassDIagram.pdf))
+- **Hardware Protection:** Biometric keys are inaccessible to user-space applications and remain within the TEE.
+- **Root Access Defense:** Even with root privileges, attackers cannot extract the hardware-backed key or bypass biometric prompts.
