@@ -2,7 +2,7 @@ The NoteApp application is designed to protect sensitive data (notes) and the Ma
 
 # Authentication Mechanisms
 
-![Login](ReadmeFiles/FinalPasswordManagement.jpg)
+![Login](ReadmeFiles/FinalPasswordManagementt.jpg)
 
 ## Password
 
@@ -18,7 +18,7 @@ The NoteApp application is designed to protect sensitive data (notes) and the Ma
 
 # Note Encryption
 
-![Login](ReadmeFiles/FinalAppInterface.jpg)
+![Login](ReadmeFiles/FinalAppInterfacee.jpg)
 
 ## Master Key and Derivation
 
