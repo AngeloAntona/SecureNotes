@@ -95,3 +95,9 @@ The NoteApp application is designed to protect sensitive data (notes) and the Ma
 
 - **Hardware Protection:** Biometric keys are inaccessible to user-space applications and remain within the TEE.
 - **Root Access Defense:** Even with root privileges, attackers cannot extract the hardware-backed key or bypass biometric prompts.
+
+
+# **Contact**
+
+- **Email**: [angeloantona.contact@gmail.com](mailto:angeloantona.contact@gmail.com)
+- **LinkedIn**: [Angelo Antona](https://www.linkedin.com/in/angeloantona/)
