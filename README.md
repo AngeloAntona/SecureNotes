@@ -98,7 +98,7 @@ This application is designed to protect sensitive data (notes) and the Master Ke
 - **Root Access Defense:** Even with root privileges, attackers cannot extract the hardware-backed key or bypass biometric prompts.
 
 
-# **Contact**
+# **Contacts**
 
 - **Email**: [angeloantona.contact@gmail.com](mailto:angeloantona.contact@gmail.com)
 - **LinkedIn**: [Angelo Antona](https://www.linkedin.com/in/angeloantona/)
