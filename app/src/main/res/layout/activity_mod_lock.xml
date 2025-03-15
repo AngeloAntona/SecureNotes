@@ -91,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:hint="New"
                 android:inputType="textPassword"
-                android:padding="12dp"
+                android:padding="10dp"
                 android:gravity="center"
                 android:textColor="?android:textColorPrimary"
                 android:textColorHint="?android:textColorPrimary"
@@ -116,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Confirm"
                 android:inputType="textPassword"
-                android:padding="12dp"
+                android:padding="10dp"
                 android:gravity="center"
                 android:textColor="?android:textColorPrimary"
                 android:textColorHint="?android:textColorPrimary"
@@ -165,15 +165,25 @@
             <TextView
                 android:id="@+id/biometricInstruction"
                 android:layout_width="wrap_content"
-                android:layout_height="172dp"
+                android:layout_height="151dp"
                 android:layout_gravity="center_horizontal"
-                android:gravity="center"
                 android:layout_marginBottom="8dp"
-                android:text="Use biometric authentication for swift and secure access.\n\nYour master key is encrypted and stored in the hardware-backed Android Keystore (TEE) requiring fingerprint for access."
+                android:gravity="center"
+                android:text="You can use biometric authentication for swift and secure access.\n\nYour master key is encrypted and stored in the hardware-backed Android Keystore."
                 android:textColor="?android:textColorPrimary"
                 android:textSize="14sp" />
 
             <!-- Bottone per abilitare/disabilitare la biometria -->
+            <TextView
+                android:id="@+id/biometricStatusTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:text="Status: Unknown"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="10sp" />
+
             <Button
                 android:id="@+id/enableBiometricButton"
                 android:layout_width="wrap_content"
@@ -185,15 +195,6 @@
                 android:text="Enable Biometrics"
                 android:textColor="?android:colorBackground" />
 
-            <TextView
-                android:id="@+id/biometricStatusTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center"
-                android:text="Status: Unknown"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
 
