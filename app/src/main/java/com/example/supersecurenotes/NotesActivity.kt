@@ -10,8 +10,6 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -99,23 +97,37 @@ class NotesActivity : ImmersiveActivity() {
         finish()
     }
 
+    /**
+     * Recupera tutti i titoli dal set, poi per ognuno legge il timestamp salvato.
+     * Ordina le note in base al timestamp (discendente) e infine popola la ListView.
+     */
     private fun updateNotesList() {
-        val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf())!!.toMutableList()
+        val allTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf())!!.toList()
+
+        // Mappiamo (titolo -> timestamp) e ordiniamo in base al timestamp discendente
+        val titlesWithTimestamps = allTitles.map { title ->
+            val lastModified = sharedPreferences.getLong("${title}_lastModified", 0L)
+            title to lastModified
+        }.sortedByDescending { it.second }
+
+        // Otteniamo la lista dei titoli ordinati
+        val sortedTitles = titlesWithTimestamps.map { it.first }
+
         val notesListView = findViewById<ListView>(R.id.notesListView)
         val emptyTextView = findViewById<TextView>(R.id.emptyTextView)
 
-        if (noteTitles.isEmpty()) {
+        if (sortedTitles.isEmpty()) {
             emptyTextView.text = "No notes available"
             emptyTextView.visibility = TextView.VISIBLE
         } else {
             emptyTextView.visibility = TextView.GONE
         }
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, noteTitles)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, sortedTitles)
         notesListView.adapter = adapter
 
         notesListView.setOnItemClickListener { _, _, position, _ ->
-            val selectedTitle = noteTitles[position]
+            val selectedTitle = sortedTitles[position]
             val encodedContent = sharedPreferences.getString(selectedTitle, null)
             if (encodedContent != null) {
                 val content = decryptNoteContent(encodedContent)
@@ -131,25 +143,45 @@ class NotesActivity : ImmersiveActivity() {
         }
 
         notesListView.setOnItemLongClickListener { _, _, position, _ ->
-            val selectedTitle = noteTitles[position]
-            showDeleteConfirmationDialog(selectedTitle, position, adapter, noteTitles)
+            val selectedTitle = sortedTitles[position]
+            showDeleteConfirmationDialog(selectedTitle)
             true
         }
     }
 
-    private fun encryptNoteContent(content: String): ByteArray? {
-        val key = getSessionKey() ?: return null
-        return try {
-            val secretKey = SecretKeySpec(key, "AES")
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-            val iv = cipher.iv
-            val ciphertext = cipher.doFinal(content.toByteArray())
-            iv + ciphertext
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+    /**
+     * Mostra il dialog di conferma e, in caso affermativo, esegue l’eliminazione,
+     * poi ricarica la lista aggiornandone la visualizzazione.
+     */
+    private fun showDeleteConfirmationDialog(noteTitle: String) {
+        val dialogBuilder = androidx.appcompat.app.AlertDialog.Builder(this)
+        dialogBuilder.setMessage("Do you really want to delete the note \"$noteTitle\"?")
+            .setCancelable(false)
+            .setPositiveButton("Yes") { dialog, _ ->
+                deleteNote(noteTitle)
+                updateNotesList()
+                dialog.dismiss()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+
+        val alert = dialogBuilder.create()
+        alert.setTitle("Delete Note")
+        alert.show()
+    }
+
+    /**
+     * Rimuove la nota (e il timestamp associato) dallo SharedPreferences.
+     */
+    private fun deleteNote(noteTitle: String) {
+        val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf())!!.toMutableSet()
+        noteTitles.remove(noteTitle)
+        sharedPreferences.edit().putStringSet(noteTitlesKey, noteTitles).apply()
+        sharedPreferences.edit()
+            .remove(noteTitle)
+            .remove("${noteTitle}_lastModified")
+            .apply()
     }
 
     private fun decryptNoteContent(encodedData: String): String? {
@@ -166,36 +198,5 @@ class NotesActivity : ImmersiveActivity() {
             e.printStackTrace()
             null
         }
-    }
-
-    private fun showDeleteConfirmationDialog(
-        noteTitle: String,
-        position: Int,
-        adapter: ArrayAdapter<String>,
-        noteTitles: MutableList<String>
-    ) {
-        val dialogBuilder = AlertDialog.Builder(this)
-        dialogBuilder.setMessage("Do you really want to delete the note \"$noteTitle\"?")
-            .setCancelable(false)
-            .setPositiveButton("Yes") { dialog, _ ->
-                deleteNote(noteTitle)
-                noteTitles.removeAt(position)
-                adapter.notifyDataSetChanged()
-                dialog.dismiss()
-            }
-            .setNegativeButton("No") { dialog, _ ->
-                dialog.dismiss()
-            }
-
-        val alert = dialogBuilder.create()
-        alert.setTitle("Delete Note")
-        alert.show()
-    }
-
-    private fun deleteNote(noteTitle: String) {
-        val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf())!!.toMutableSet()
-        noteTitles.remove(noteTitle)
-        sharedPreferences.edit().putStringSet(noteTitlesKey, noteTitles).apply()
-        sharedPreferences.edit().remove(noteTitle).apply()
     }
 }

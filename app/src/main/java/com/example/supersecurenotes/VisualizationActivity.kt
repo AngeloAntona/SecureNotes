@@ -8,7 +8,6 @@ import android.util.Base64
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -95,25 +94,44 @@ class VisualizationActivity : ImmersiveActivity() {
         }
     }
 
+    /**
+     * Salviamo la nota in sharedPreferences e registriamo un timestamp
+     * per ordinare successivamente le note in base alla data di modifica.
+     */
     private fun saveEncryptedNote(title: String, content: String) {
         val encryptedContent = encryptNoteContent(content)
         if (encryptedContent != null) {
             val encodedContent = Base64.encodeToString(encryptedContent, Base64.DEFAULT)
+
+            // Salviamo il contenuto crittato
             sharedPreferences.edit().putString(title, encodedContent).apply()
+
+            // Aggiorniamo o aggiungiamo il titolo all'insieme
             val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf())!!.toMutableSet()
             noteTitles.add(title)
             sharedPreferences.edit().putStringSet(noteTitlesKey, noteTitles).apply()
+
+            // Salviamo il timestamp di modifica
+            sharedPreferences.edit()
+                .putLong("${title}_lastModified", System.currentTimeMillis())
+                .apply()
         } else {
             Toast.makeText(this, "Failed to encrypt note", Toast.LENGTH_SHORT).show()
         }
     }
 
+    /**
+     * Rimuove la vecchia nota e il suo timestamp se il titolo è cambiato.
+     */
     private fun removeOldNote(oldTitle: String) {
         if (oldTitle.isBlank()) return
 
         val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf())!!.toMutableSet()
         noteTitles.remove(oldTitle)
         sharedPreferences.edit().putStringSet(noteTitlesKey, noteTitles).apply()
-        sharedPreferences.edit().remove(oldTitle).apply()
+        sharedPreferences.edit()
+            .remove(oldTitle)
+            .remove("${oldTitle}_lastModified")
+            .apply()
     }
 }
