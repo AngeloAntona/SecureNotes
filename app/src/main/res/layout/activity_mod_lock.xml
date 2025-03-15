@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="?android:colorBackground"
     android:padding="24dp">
 
@@ -12,154 +12,249 @@
         android:id="@+id/screenTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SETTINGS"
+        android:text="SECURITY SETTINGS"
         android:textStyle="bold"
         android:textSize="25sp"
         android:textColor="?android:textColorPrimary"
         android:layout_gravity="center_horizontal"
+        android:gravity="center"
         android:layout_marginBottom="40dp" />
 
-    <!-- Sezione top: inserimento vecchia password -->
+    <!-- Istruzione per l'autorizzazione -->
     <TextView
+        android:id="@+id/currentPasswordInstruction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Current Password"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:textColor="?android:textColorPrimary"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="8dp" />
+        android:gravity="center"
+        android:layout_marginBottom="8dp"
+        android:text="Enter your current password to modify settings."
+        android:textColor="?android:textColorPrimary"
+        android:textSize="16sp" />
 
+    <!-- Campo di inserimento password -->
     <EditText
         android:id="@+id/previousPasswordEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Current password"
+        android:hint="Password"
         android:inputType="textPassword"
         android:padding="12dp"
+        android:gravity="center"
         android:textColor="?android:textColorPrimary"
         android:textColorHint="?android:textColorPrimary"
         android:layout_marginBottom="24dp" />
 
-    <!-- Sezione bottom: due colonne affiancate con linea meno visibile -->
+    <!-- Sezione a due colonne per cambio password e gestione biometrica -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <!-- Sezione sinistra: cambio password -->
+        <!-- Sezione cambio password -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="8dp">
 
+            <!-- Header e istruzioni -->
             <TextView
+                android:id="@+id/changePasswordHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Password"
-                android:layout_gravity="center_horizontal"
+                android:text="Change Password"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:textColor="?android:textColorPrimary"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/changePasswordInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose a new password."
+                android:textSize="14sp"
+                android:textColor="?android:textColorPrimary"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
                 android:layout_marginBottom="8dp" />
 
+            <!-- Nuova password con placeholder breve -->
             <EditText
                 android:id="@+id/newPasswordEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="New password"
+                android:hint="New"
                 android:inputType="textPassword"
-                android:layout_gravity="center_horizontal"
                 android:padding="12dp"
+                android:gravity="center"
                 android:textColor="?android:textColorPrimary"
                 android:textColorHint="?android:textColorPrimary"
                 android:layout_marginBottom="8dp" />
 
+            <!-- Indicatore complessità password -->
             <TextView
                 android:id="@+id/passwordStrengthTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textSize="12sp"
                 android:text="Password must be at least 8 characters."
+                android:textSize="10sp"
                 android:textColor="?android:textColorPrimary"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
                 android:layout_marginBottom="8dp" />
 
+            <!-- Conferma password con placeholder breve -->
             <EditText
                 android:id="@+id/repeatNewPasswordEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Repeat new password"
-                android:layout_gravity="center_horizontal"
+                android:hint="Confirm"
                 android:inputType="textPassword"
                 android:padding="12dp"
+                android:gravity="center"
                 android:textColor="?android:textColorPrimary"
                 android:textColorHint="?android:textColorPrimary"
                 android:layout_marginBottom="16dp" />
 
+            <!-- Bottone per confermare il cambio password -->
             <Button
                 android:id="@+id/savePasswordButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/rounded_button"
-                android:padding="12dp"
                 android:text="Change Password"
-                android:textColor="?android:colorBackground" />
+                android:background="@drawable/rounded_button"
+                android:padding="10dp"
+                android:textColor="?android:colorBackground"
+                android:layout_gravity="center_horizontal" />
         </LinearLayout>
 
-        <!-- Linea verticale meno visibile (1dp e dividerHorizontal) -->
+        <!-- Divider verticale con margine ridotto -->
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="16dp"
+            android:layout_marginHorizontal="8dp"
             android:background="?android:dividerHorizontal" />
 
-        <!-- Sezione destra: modifica stato biometria -->
+        <!-- Sezione autenticazione biometrica -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="8dp">
 
+            <!-- Header e istruzioni -->
             <TextView
+                android:id="@+id/biometricHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Biometric Auth"
-                android:layout_gravity="center_horizontal"
+                android:text="Toggle Biometrics"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:textColor="?android:textColorPrimary"
-                android:layout_marginBottom="8dp" />
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="4dp" />
 
-            <!-- View "spacer" per allineare il bottone a quello a sinistra -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginBottom="8dp" />
+            <TextView
+                android:id="@+id/biometricInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="172dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="8dp"
+                android:text="Use biometric authentication for swift and secure access.\n\nYour master key is encrypted and stored in the hardware-backed Android Keystore (TEE) requiring fingerprint for access."
+                android:textColor="?android:textColorPrimary"
+                android:textSize="14sp" />
 
+            <!-- Bottone per abilitare/disabilitare la biometria -->
             <Button
                 android:id="@+id/enableBiometricButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_button"
-                android:padding="12dp"
                 android:layout_gravity="center_horizontal"
-                android:textColor="?android:colorBackground"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rounded_button"
+                android:padding="10dp"
+                android:text="Enable Biometrics"
+                android:textColor="?android:colorBackground" />
 
             <TextView
                 android:id="@+id/biometricStatusTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:gravity="center"
                 android:text="Status: Unknown"
-                android:textColor="?android:textColorPrimary" />
+                android:textColor="?android:textColorPrimary"
+                android:textSize="14sp" />
         </LinearLayout>
+    </LinearLayout>
 
+    <!-- Divider orizzontale per separare le sezioni -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="16dp"
+        android:background="?android:dividerHorizontal" />
+
+    <!-- Sezione informazioni contatti -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/contactsHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contacts"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="?android:textColorPrimary"
+            android:gravity="center"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Frase breve dopo il titolo -->
+        <TextView
+            android:id="@+id/contactPrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bugs or questions? Drop me a line."
+            android:textSize="14sp"
+            android:textColor="?android:textColorPrimary"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/emailInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email: angeloantona.contact@gmail.com"
+            android:autoLink="email"
+            android:linksClickable="true"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/linkedinInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LinkedIn: https://www.linkedin.com/in/angeloantona/"
+            android:autoLink="web"
+            android:linksClickable="true"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
     </LinearLayout>
 </LinearLayout>

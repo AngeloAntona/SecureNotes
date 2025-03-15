@@ -16,7 +16,7 @@
     <!-- SplashScreen theme for dark mode -->
     <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/primaryBackgroundColorNight</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/securenotes_logo_black</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo_b</item>
         <item name="postSplashScreenTheme">@style/Theme.SuperSecureNotes</item>
     </style>
 </resources>

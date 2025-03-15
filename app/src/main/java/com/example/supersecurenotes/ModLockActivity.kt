@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 
-class ModLockActivity : AppCompatActivity() {
+class ModLockActivity : ImmersiveActivity() {
 
     private lateinit var passwordManager: PasswordManager
     private lateinit var sharedPreferences: SharedPreferences
