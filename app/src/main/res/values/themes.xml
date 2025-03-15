@@ -2,7 +2,6 @@
     <!-- Main theme for light mode -->
     <style name="Theme.SuperSecureNotes" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:colorBackground">@color/primaryBackgroundColor</item>
-        <!-- Se usi cutout, puoi mantenere windowLayoutInDisplayCutoutMode -->
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
         <item name="android:textColorPrimary">@color/primaryTextColor</item>
         <item name="colorPrimaryDark">@color/primaryBackgroundColor</item>
@@ -12,12 +11,18 @@
         <item name="actionModeBackground">@color/primaryBackgroundColor</item>
         <item name="actionModeSplitBackground">@color/primaryBackgroundColor</item>
         <item name="actionModeCloseDrawable">@android:drawable/ic_menu_close_clear_cancel</item>
-        <item name="android:textColorPrimary">@color/primaryTextColor</item>
-
-        <!-- Assicura che il sistema disegni le system bar con i colori impostati -->
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@color/primaryBackgroundColor</item>
         <item name="android:navigationBarColor">@color/primaryBackgroundColor</item>
+
+        <!-- Utilizza uno stile personalizzato per gli AlertDialog -->
+        <item name="alertDialogTheme">@style/CustomAlertDialogTheme.Light</item>
+    </style>
+
+    <!-- Custom AlertDialog style for light mode -->
+    <style name="CustomAlertDialogTheme.Light" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="android:colorBackground">@color/primaryBackgroundColor</item>
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
     </style>
 
     <!-- SplashScreen theme for light mode -->

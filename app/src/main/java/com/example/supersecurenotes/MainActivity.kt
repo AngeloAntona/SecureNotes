@@ -10,7 +10,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
-class MainActivity : ImmersiveActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var passwordManager: PasswordManager
     private lateinit var usePasswordButton: Button

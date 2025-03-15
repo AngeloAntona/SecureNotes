@@ -7,7 +7,7 @@ import android.text.TextWatcher
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
-class SetPasswordActivity : ImmersiveActivity() {
+class SetPasswordActivity : AppCompatActivity() {
 
     private lateinit var passwordManager: PasswordManager
 
