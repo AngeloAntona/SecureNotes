@@ -119,7 +119,6 @@ class MainActivity : ImmersiveActivity() {
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle("Biometric Login for Secure Notes")
-            .setSubtitle("Place your finger on the sensor")
             .setNegativeButtonText("Use Password")
             .build()
 
