@@ -48,7 +48,7 @@
 
     <!-- Two-column section for password change and biometric management -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="329dp"
         android:layout_weight="1"
         android:orientation="horizontal">
