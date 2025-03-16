@@ -10,24 +10,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SuperSecureNotes">
 
-        <!-- MainActivity con splash screen come tema -->
+        <!-- MainActivity with splash screen as theme, locked to portrait -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.App.SplashScreen">
+            android:theme="@style/Theme.App.SplashScreen"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Dichiarazione delle altre attività -->
-        <activity android:name=".NotesActivity" />
-        <activity android:name=".ModLockActivity" />
-        <activity android:name=".VisualizationActivity" />
-
-        <!-- Aggiunta di SetPasswordActivity -->
-        <activity android:name=".SetPasswordActivity" />
+        <!-- Other activities locked to portrait -->
+        <activity
+            android:name=".NotesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ModLockActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".VisualizationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SetPasswordActivity"
+            android:screenOrientation="portrait" />
 
     </application>
 </manifest>
