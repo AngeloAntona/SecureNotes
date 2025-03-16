@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- TextView per il messaggio "lista vuota" -->
+    <!-- TextView displayed when there are no notes -->
     <TextView
         android:id="@+id/emptyTextView"
         android:layout_width="wrap_content"
@@ -14,7 +14,7 @@
         android:textSize="18sp"
         android:textColor="?android:textColorPrimary" />
 
-    <!-- ListView per le note -->
+    <!-- ListView to display notes -->
     <ListView
         android:id="@+id/notesListView"
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         android:layout_weight="1"
         android:padding="16dp" />
 
-    <!-- Bottone + (nuova nota) in basso a sinistra -->
+    <!-- New Note Button positioned at bottom left -->
     <Button
         android:id="@+id/newNoteButton"
         android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
         android:layout_alignParentStart="true"
         android:layout_margin="16dp" />
 
-    <!-- Bottone M (modifica) in basso a destra -->
+    <!-- Change Password Button positioned at bottom right -->
     <Button
         android:id="@+id/changePasswordButton"
         android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp" />
 
-    <!-- Bottone D (delete) in basso al centro, inizialmente invisibile -->
+    <!-- Delete Button positioned at the bottom center; initially hidden -->
     <Button
         android:id="@+id/deleteSelectedButton"
         android:layout_width="wrap_content"

@@ -36,7 +36,7 @@ class EncryptionManager {
             .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
             .setUserAuthenticationRequired(true)
-            .setUserAuthenticationValidityDurationSeconds(0) // Richiede impronta ogni volta
+            .setUserAuthenticationValidityDurationSeconds(0) // Requires authentication every time
             .build()
         keyGenerator.init(keyGenParameterSpec)
         return keyGenerator.generateKey()
@@ -56,7 +56,7 @@ class EncryptionManager {
         }
     }
 
-    // Funzione per criptare la Master Key con la chiave biometrica:
+    // Function to encrypt the Master Key with the biometric key
     fun encryptWithBiometricKey(masterKey: ByteArray): ByteArray? {
         val cipher = getEncryptCipher() ?: return null
         val iv = cipher.iv

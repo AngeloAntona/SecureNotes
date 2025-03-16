@@ -8,7 +8,7 @@
     android:padding="16dp"
     android:background="?android:colorBackground">
 
-    <!-- Campo password -->
+    <!-- Password field -->
     <EditText
         android:id="@+id/passwordEditText"
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
         android:minHeight="48dp"
         android:visibility="gone" />
 
-    <!-- Bottone Login -->
+    <!-- Login Button -->
     <Button
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
         android:layout_marginTop="16dp"
         android:visibility="gone"/>
 
-    <!-- Bottone per usare password come fallback -->
+    <!-- Button to use password as fallback -->
     <Button
         android:id="@+id/usePasswordButton"
         android:layout_width="match_parent"

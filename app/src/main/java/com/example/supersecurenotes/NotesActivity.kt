@@ -24,20 +24,20 @@ class NotesActivity : AppCompatActivity() {
     private lateinit var changePasswordButton: Button
     private lateinit var deleteSelectedButton: Button
 
-    // Chiave per salvare i titoli delle note
+    // Key for storing note titles
     private val noteTitlesKey = "noteTitlesKey"
 
-    // Per GCM
+    // For GCM
     private val GCM_TAG_LENGTH = 128
 
-    // Flag che indica se siamo in "modalità selezione multipla"
+    // Flag indicating if multi-selection mode is active
     private var isSelectionModeActive = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notes)
 
-        // Controllo sessione
+        // Session check
         val app = applicationContext as MyApplication
         if (app.isSessionExpired()) {
             app.clearSession()
@@ -75,8 +75,8 @@ class NotesActivity : AppCompatActivity() {
     }
 
     /**
-     * Se siamo in modalità selezione e l'utente preme il tasto Back,
-     * usciamo dalla selezione con dissolvenza. Altrimenti comportamento di default.
+     * If multi-selection mode is active and the user presses Back,
+     * exit selection mode with a fade effect. Otherwise, use the default behavior.
      */
     override fun onBackPressed() {
         if (isSelectionModeActive) {
@@ -87,10 +87,10 @@ class NotesActivity : AppCompatActivity() {
     }
 
     /**
-     * Inizializza i pulsanti: Nuova Nota (+), Cambia Password (M), e Elimina (D).
+     * Initializes the New Note, Change Password, and Delete buttons.
      */
     private fun initializeButtons() {
-        // Pulsante NUOVA NOTA (+)
+        // New Note button (+)
         newNoteButton.setOnClickListener {
             val app = applicationContext as MyApplication
             if (app.isSessionExpired()) {
@@ -105,7 +105,7 @@ class NotesActivity : AppCompatActivity() {
             }
         }
 
-        // Pulsante MODIFICA (M)
+        // Change Password button (M)
         changePasswordButton.setOnClickListener {
             val app = applicationContext as MyApplication
             if (app.isSessionExpired()) {
@@ -119,25 +119,25 @@ class NotesActivity : AppCompatActivity() {
             }
         }
 
-        // Pulsante DELETE (D)
+        // Delete button (D)
         deleteSelectedButton.setOnClickListener {
             showDeleteConfirmationForSelected()
         }
     }
 
     /**
-     * Costruisce/aggiorna la lista delle note in base alla modalità corrente.
+     * Builds/updates the note list based on the current mode.
      */
     private fun updateNotesList() {
         val allTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf())!!.toList()
 
-        // Mappiamo (titolo -> timestamp) e ordiniamo in base al timestamp discendente
+        // Map (title -> timestamp) and sort by descending timestamp
         val titlesWithTimestamps = allTitles.map { title ->
             val lastModified = sharedPreferences.getLong("${title}_lastModified", 0L)
             title to lastModified
         }.sortedByDescending { it.second }
 
-        // Otteniamo la lista dei titoli ordinati
+        // Retrieve the sorted list of titles
         val sortedTitles = titlesWithTimestamps.map { it.first }
 
         if (sortedTitles.isEmpty()) {
@@ -147,8 +147,7 @@ class NotesActivity : AppCompatActivity() {
             emptyTextView.visibility = View.GONE
         }
 
-        // Se in selezione multipla, useremo "simple_list_item_multiple_choice"
-        // per avere la bullet list (checkbox). Altrimenti "simple_list_item_1".
+        // Use multiple-choice layout if in multi-selection mode, otherwise simple list layout
         val layoutForList = if (isSelectionModeActive) {
             android.R.layout.simple_list_item_multiple_choice
         } else {
@@ -158,17 +157,16 @@ class NotesActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, layoutForList, sortedTitles)
         notesListView.adapter = adapter
 
-        // Se in selezione, abilitiamo la choiceMode multipla, altrimenti nessuna selezione
+        // Enable multiple choice if in selection mode, otherwise disable selection
         notesListView.choiceMode = if (isSelectionModeActive) {
             ListView.CHOICE_MODE_MULTIPLE
         } else {
             ListView.CHOICE_MODE_NONE
         }
 
-        // Clic singolo
+        // Single click: open the note
         notesListView.setOnItemClickListener { _, _, position, _ ->
             if (!isSelectionModeActive) {
-                // Apriamo la nota
                 val selectedTitle = sortedTitles[position]
                 val encodedContent = sharedPreferences.getString(selectedTitle, null)
                 if (encodedContent != null) {
@@ -183,10 +181,10 @@ class NotesActivity : AppCompatActivity() {
                     }
                 }
             }
-            // In modalità selezione, i checkbox sono gestiti automaticamente
+            // In selection mode, checkboxes are handled automatically
         }
 
-        // Clic lungo: avvia la modalità selezione multipla, se non è già attiva
+        // Long click: activate multi-selection mode if not already active
         notesListView.setOnItemLongClickListener { _, _, position, _ ->
             if (!isSelectionModeActive) {
                 switchSelectionMode(true, position)
@@ -196,9 +194,8 @@ class NotesActivity : AppCompatActivity() {
     }
 
     /**
-     * Mostra il pop-up di conferma (AlertDialog) in stile identico al tuo vecchio pop-up,
-     * adattato alla multi-selezione, e che segue il tema chiaro/scuro.
-     * Se l'utente preme il tasto Back, il pop-up scompare, ma la modalità selezione rimane attiva.
+     * Shows a confirmation pop-up for deleting the selected notes.
+     * The dialog is cancelable, but selection mode remains active if canceled.
      */
     private fun showDeleteConfirmationForSelected() {
         val adapter = notesListView.adapter as ArrayAdapter<*>
@@ -220,7 +217,7 @@ class NotesActivity : AppCompatActivity() {
 
         val dialogBuilder = AlertDialog.Builder(this)
         dialogBuilder.setMessage(messageBuilder.toString().trim())
-            .setCancelable(true)  // Il dialog è cancelabile
+            .setCancelable(true)
             .setPositiveButton("Yes") { dialog, _ ->
                 for (title in selectedTitles) {
                     deleteNote(title)
@@ -235,18 +232,16 @@ class NotesActivity : AppCompatActivity() {
         val alert = dialogBuilder.create()
         alert.setTitle("Delete Note")
         alert.setCanceledOnTouchOutside(true)
-        // Non impostiamo un OnCancelListener che disattiva la modalità di selezione,
-        // così se si preme Back il dialog scompare ma la modalità rimane attiva.
         alert.show()
     }
 
     /**
-     * Funzione centralizzata per entrare/uscire dalla modalità selezione con dissolvenza.
-     * @param enable true per passare a selezione multipla, false per tornare normale.
-     * @param positionToCheck, se specificato, seleziona immediatamente quell'item.
+     * Centralized function to enable/disable selection mode with a fade effect.
+     * @param enable true to enable multi-selection, false to disable.
+     * @param positionToCheck if specified, immediately selects that item.
      */
     private fun switchSelectionMode(enable: Boolean, positionToCheck: Int? = null) {
-        // 1) Fade out della ListView
+        // 1) Fade out the ListView
         notesListView.animate()
             .alpha(0f)
             .setDuration(200)
@@ -288,7 +283,7 @@ class NotesActivity : AppCompatActivity() {
     }
 
     /**
-     * Rimuove la nota (e il relativo timestamp) dallo SharedPreferences.
+     * Removes the note and its timestamp from SharedPreferences.
      */
     private fun deleteNote(noteTitle: String) {
         val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf())!!.toMutableSet()
@@ -301,7 +296,7 @@ class NotesActivity : AppCompatActivity() {
     }
 
     /**
-     * Decritta il contenuto di una nota, restituendolo come stringa.
+     * Decrypts the note content and returns it as a string.
      */
     private fun decryptNoteContent(encodedData: String): String? {
         val encryptedData = Base64.decode(encodedData, Base64.DEFAULT)

@@ -96,23 +96,22 @@ class VisualizationActivity : AppCompatActivity() {
     }
 
     /**
-     * Salviamo la nota in sharedPreferences e registriamo un timestamp
-     * per ordinare successivamente le note in base alla data di modifica.
+     * Saves the encrypted note and its timestamp for later sorting.
      */
     private fun saveEncryptedNote(title: String, content: String) {
         val encryptedContent = encryptNoteContent(content)
         if (encryptedContent != null) {
             val encodedContent = Base64.encodeToString(encryptedContent, Base64.DEFAULT)
 
-            // Salviamo il contenuto crittato
+            // Save the encrypted content
             sharedPreferences.edit().putString(title, encodedContent).apply()
 
-            // Aggiorniamo o aggiungiamo il titolo all'insieme
+            // Update or add the title to the set
             val noteTitles = sharedPreferences.getStringSet(noteTitlesKey, mutableSetOf())!!.toMutableSet()
             noteTitles.add(title)
             sharedPreferences.edit().putStringSet(noteTitlesKey, noteTitles).apply()
 
-            // Salviamo il timestamp di modifica
+            // Save the modification timestamp
             sharedPreferences.edit()
                 .putLong("${title}_lastModified", System.currentTimeMillis())
                 .apply()
@@ -122,7 +121,7 @@ class VisualizationActivity : AppCompatActivity() {
     }
 
     /**
-     * Rimuove la vecchia nota e il suo timestamp se il titolo è cambiato.
+     * Removes the old note and its timestamp if the title has changed.
      */
     private fun removeOldNote(oldTitle: String) {
         if (oldTitle.isBlank()) return

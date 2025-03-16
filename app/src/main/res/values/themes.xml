@@ -15,7 +15,7 @@
         <item name="android:statusBarColor">@color/primaryBackgroundColor</item>
         <item name="android:navigationBarColor">@color/primaryBackgroundColor</item>
 
-        <!-- Utilizza uno stile personalizzato per gli AlertDialog -->
+        <!-- Custom AlertDialog style -->
         <item name="alertDialogTheme">@style/CustomAlertDialogTheme.Light</item>
     </style>
 

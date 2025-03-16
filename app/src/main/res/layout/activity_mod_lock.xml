@@ -7,7 +7,7 @@
     android:background="?android:colorBackground"
     android:padding="24dp">
 
-    <!-- Titolo della schermata -->
+    <!-- Screen title -->
     <TextView
         android:id="@+id/screenTitle"
         android:layout_width="wrap_content"
@@ -20,7 +20,7 @@
         android:gravity="center"
         android:layout_marginBottom="40dp" />
 
-    <!-- Istruzione per l'autorizzazione -->
+    <!-- Instruction to enter current password -->
     <TextView
         android:id="@+id/currentPasswordInstruction"
         android:layout_width="wrap_content"
@@ -32,7 +32,7 @@
         android:textColor="?android:textColorPrimary"
         android:textSize="16sp" />
 
-    <!-- Campo di inserimento password -->
+    <!-- Password input field -->
     <EditText
         android:id="@+id/previousPasswordEditText"
         android:layout_width="match_parent"
@@ -44,16 +44,16 @@
         android:gravity="center"
         android:textColor="?android:textColorPrimary"
         android:textColorHint="?android:textColorPrimary"
-        android:layout_marginBottom="24dp" />
+        android:layout_marginBottom="14dp" />
 
-    <!-- Sezione a due colonne per cambio password e gestione biometrica -->
+    <!-- Two-column section for password change and biometric management -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="329dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <!-- Sezione cambio password -->
+        <!-- Password change section -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -61,61 +61,58 @@
             android:orientation="vertical"
             android:padding="8dp">
 
-            <!-- Header e istruzioni -->
+            <!-- Header and instructions -->
             <TextView
                 android:id="@+id/changePasswordHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Change password"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:textColor="?android:textColorPrimary"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="4dp"
                 android:gravity="center"
-                android:layout_marginBottom="4dp" />
+                android:text="Change password"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-            <!-- Nuova password con placeholder breve -->
-
+            <!-- New password input field -->
             <EditText
                 android:id="@+id/newPasswordEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
                 android:hint=". . ."
                 android:inputType="textPassword"
                 android:padding="10dp"
-                android:textSize="14sp"
-                android:gravity="center"
                 android:textColor="?android:textColorPrimary"
                 android:textColorHint="?android:textColorPrimary"
-                android:layout_marginBottom="8dp" />
+                android:textSize="14sp" />
 
-            <!-- Indicatore complessità password -->
-
-            <!-- Conferma password con placeholder breve -->
+            <!-- Confirm password input field -->
             <EditText
                 android:id="@+id/repeatNewPasswordEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
                 android:hint=". . ."
                 android:inputType="textPassword"
                 android:padding="10dp"
-                android:textSize="14sp"
-                android:gravity="center"
                 android:textColor="?android:textColorPrimary"
                 android:textColorHint="?android:textColorPrimary"
-                android:layout_marginBottom="16dp" />
+                android:textSize="14sp" />
 
-            <!-- Bottone per confermare il cambio password -->
-
+            <!-- Button to confirm password change -->
             <Button
                 android:id="@+id/savePasswordButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Change Password"
+                android:layout_gravity="center_horizontal"
                 android:background="@drawable/rounded_button"
-                android:padding="10dp"
+                android:padding="16dp"
+                android:text="Change Password"
                 android:textColor="?android:colorBackground"
-                android:layout_gravity="center_horizontal" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/passwordStrengthTextView"
@@ -125,21 +122,20 @@
                 android:layout_marginBottom="8dp"
                 android:gravity="center"
                 android:paddingTop="12dp"
-
                 android:text="Password must be at least 8 characters."
                 android:textColor="?android:textColorPrimary"
                 android:textSize="10sp" />
 
         </LinearLayout>
 
-        <!-- Divider verticale con margine ridotto -->
+        <!-- Vertical divider with reduced margin -->
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:layout_marginHorizontal="8dp"
             android:background="?android:dividerHorizontal" />
 
-        <!-- Sezione autenticazione biometrica -->
+        <!-- Biometric authentication section -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -147,21 +143,20 @@
             android:orientation="vertical"
             android:padding="8dp">
 
-            <!-- Header e istruzioni -->
+            <!-- Header and instructions -->
             <TextView
                 android:id="@+id/biometricHeader"
                 android:layout_width="wrap_content"
-                android:layout_height="34dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="4dp"
                 android:gravity="top"
                 android:text="Toggle biometrics"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <!-- Bottone per abilitare/disabilitare la biometria -->
-
+            <!-- Button to enable/disable biometrics -->
             <Button
                 android:id="@+id/enableBiometricButton"
                 android:layout_width="157dp"
@@ -169,7 +164,8 @@
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/round_button"
                 android:text="Enable Biometrics"
-                android:textColor="?android:colorBackground" />
+                android:textColor="?android:colorBackground"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/biometricStatusTextView"
@@ -177,22 +173,22 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
-                android:text="Status: Unknown"
                 android:paddingTop="10dp"
+                android:text="Status: Unknown"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="10sp" />
 
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Divider orizzontale per separare le sezioni -->
+    <!-- Horizontal divider to separate sections -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="16dp"
         android:background="?android:dividerHorizontal" />
 
-    <!-- Sezione informazioni contatti -->
+    <!-- Contacts information section -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -210,7 +206,7 @@
             android:gravity="center"
             android:layout_marginBottom="4dp" />
 
-        <!-- Frase breve dopo il titolo -->
+        <!-- Short prompt text after the title -->
         <TextView
             android:id="@+id/contactPrompt"
             android:layout_width="wrap_content"
