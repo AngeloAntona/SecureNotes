@@ -1,6 +1,6 @@
 The NoteApp application is designed to protect sensitive data (notes) and the Master Key used to encrypt them through a combination of user passwords, secure key derivation, optional biometrics, and robust encryption. Its goal is to prevent unauthorized access, even if the device is compromised, ensuring the confidentiality and integrity of the notes.
 
-You can download the apk [here](ReadmeFiles/Sigillus.apk)
+You can download the APK [here](ReadmeFiles/Sigillus.apk). Please note that the screenshots in this README may differ from the current version, as I have improved the application without updating the images every time. Rest assured, the core philosophy of maintaining maximum security remains unchanged.
 
 # Authentication Mechanisms
 
